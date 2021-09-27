@@ -1,0 +1,57 @@
+{
+  "title": "Signal K - MQTT Gateway",
+  "type": "object",
+  "required": ["port"],
+  "properties": {
+    "remoteHost": {
+      "type": "string",
+      "title": "MQTT server url (eg: mqtt://192.168.1.203)",
+      "description": "MQTT server that the paths listed below should be sent to",
+      "default": "mqtt://somehost"
+    },
+    "username": {
+      "type": "string",
+      "title": "MQTT server username"
+    },
+    "password": {
+      "type": "string",
+      "title": "MQTT server password"
+    },
+    "rejectUnauthorized": {
+      "type": "boolean",
+      "default": false,
+      "title": "Reject self signed and invalid server certificates"
+    },
+    "subscriptionroot": {
+      "type": "string",
+      "default": "mqtt.",
+      "title": "Where to place subscribed data in Signal K"
+    },
+    "paths": {
+      "type": "array",
+      "title": "Signal K self paths to send",
+      "default": [{ "path": "navigation.position", "topic": "navigation/position", "retain": true, "interval": 60 }],
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "title": "Path", "default": "" },
+          "topic": { "title": "Publish a simple value to this topic", "type": "string" },
+          "retain": { "title": "Ask the server to retain the most recent value", "type": "boolean" },
+          "interval": { "type": "number", "title": "Minimum interval between updates for this path to be sent to the server" }
+        }
+      }
+    },
+    "topics": {
+      "type": "array",
+      "title": "MQTT paths to receive",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "topic": { "title": "Publish a simple value to this topic", "type": "string" },
+          "path": { "type": "string", "title": "Path", "default": "" }
+        }
+      }
+    }
+  }
+}
