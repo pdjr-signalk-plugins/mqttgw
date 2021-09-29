@@ -3,9 +3,10 @@
 Exchange data between MQTT and Signal K.
 
 __pdjr-skplugin_mqttgw__ establishes a client connection to a specified
-MQTT server.
-Specified Signal K path values are published as MQTT topics and specified
-MQTT topic messages are imported to Signal K path values.
+MQTT server, publishing Signal K path values to MQTT topics and receiving
+MQTT messages as Signal K path values.
+
+The configuration file, ```mqttgw.json```
 
 Publications are identified by a Signal K path and optionally mapped to
 an equivalent MQTT topic.
