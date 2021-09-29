@@ -83,7 +83,7 @@ module.exports = function(app) {
   function startSending(paths, client) {
     paths.forEach(path => {
       if ((path.path) && (path.path != '') && (path.topic) && (path.topic != '')) {
-        unsubscribes.push(app.streambundle.getSelfBus(path.path).debounceImmediate((path.interval || 60) * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
+        unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle((path.interval)?(path.interval * 1000):50).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           log.N("publishing topic: %s, message: %s", path.topic, "" + JSON.stringify(value.value));
           client.publish(path.topic, "" + JSON.stringify(value.value), { qos: 1, retain: (path.retain || false) });
         }));
