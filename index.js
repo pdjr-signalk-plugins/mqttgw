@@ -64,7 +64,7 @@ module.exports = function(app) {
 
         client.on('message', function(topic, message) {
           path = options.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscriptionroot + topic.replace(/\//g, "."))); 
-          log.N("received topic: %s, message: %s", path, message.toString());
+          //log.N("received topic: %s, message: %s", path, message.toString());
           (new Delta(app,plugin.id)).addValue(path, message.toString()).commit().clear();
         });
       } else {
@@ -84,7 +84,7 @@ module.exports = function(app) {
     paths.forEach(path => {
       if ((path.path) && (path.path != '') && (path.topic) && (path.topic != '')) {
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle((path.interval)?(path.interval * 1000):50).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
-          log.N("publishing topic: %s, message: %s", path.topic, "" + JSON.stringify(value.value));
+          //log.N("publishing topic: %s, message: %s", path.topic, "" + JSON.stringify(value.value));
           client.publish(path.topic, "" + JSON.stringify(value.value), { qos: 1, retain: (path.retain || false) });
         }));
       }
