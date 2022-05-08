@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Teppo Kurki <teppo.kurki@iki.fi>
+ * Copyright 2021 Paul Reeve <preeve@pdjr.eu>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
  * limitations under the License.
 */
 
-const fs = require('fs');
 const mqtt = require('mqtt');
-const Log = require("./lib/signalk-liblog/Log.js");
+
 const Delta = require("./lib/signalk-libdelta/Delta.js");
+const Log = require("./lib/signalk-liblog/Log.js");
+const Schema = require("./lib/signalk-libschema/Schema.js");
 
 const PLUGIN_ID = "mqttgw";
 const PLUGIN_NAME = "MQTT gateway";
@@ -34,16 +35,23 @@ module.exports = function(app) {
   plugin.name = PLUGIN_NAME;
   plugin.description = PLUGIN_DESCRIPTION;
 
-  plugin.schema = (fs.existsSync(PLUGIN_SCHEMA_FILE))?JSON.parse(fs.readFileSync(PLUGIN_SCHEMA_FILE)):{};
-  plugin.uischema = (fs.existsSync(PLUGIN_UISCHEMA_FILE))?JSON.parse(fs.readFileSync(PLUGIN_UISCHEMA_FILE)):{};
-
   const log = new Log(plugin.id, { ncallback: app.setPluginStatus, ecallback: app.setPluginError });
 
+  plugin.schema = function() {
+    var schema = Schema.createSchema(PLUGIN_SCHEMA_FILE);
+    return(schema.getSchema());
+  };
+
+  plugin.uiSchema = function() {
+    var schema = Schema.createSchema(PLUGIN_UISCHEMA_FILE);
+    return(schema.getSchema());
+  }
+  
   plugin.start = function(options) {
     if (options) {
       if (options.broker.url != "") {
         const client = mqtt.connect(options.broker.url, {
-          rejectUnauthorized: true,
+          rejectUnauthorized: (options.broker.rejectunauthorised)?options.broker.rejectunauthorised:true,
           reconnectPeriod: 60000,
           clientId: app.selfId,
           username: options.broker.username,
@@ -51,8 +59,7 @@ module.exports = function(app) {
         });
 
         client.on('error', (err) => {
-          log.N("MQTT connection error");
-          console.error(err);
+          log.E("MQTT connection error (%s)", err);
         });
 
         client.on('connect', () => {
@@ -71,7 +78,7 @@ module.exports = function(app) {
         log.E("configuration does not specify the MQTT server");
       }
     } else {
-      log.E("missing configuration file");
+      log.E("bad or missing configuration file");
     }
   }
 
@@ -79,10 +86,10 @@ module.exports = function(app) {
     unsubscribes.forEach(f => f());
   };
 
-
   function startSending(paths, client) {
     paths.forEach(path => {
-      if ((path.path) && (path.path != '') && (path.topic) && (path.topic != '')) {
+      if ((path.path) && (path.path != '')) {
+        path.topic = ((path.root)?path.root:'') + ((path.topic) && (path.topic != ''))?path.topic:path.path.replace(/\./g, "/");
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle((path.interval)?(path.interval * 1000):50).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           app.debug("publishing topic: %s, message: %s", path.topic, "" + JSON.stringify(value.value));
           client.publish(path.topic, "" + JSON.stringify(value.value), { qos: 1, retain: (path.retain || false) });
