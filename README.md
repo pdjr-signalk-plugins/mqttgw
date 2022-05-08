@@ -17,13 +17,13 @@ Property      | Description | Default value
 ------------- | --- | ---
 url           | Required URL of MQTT server (for example, "mqtt://192.168.1.1"). | ''
 username      | Optional name of a login user on the MQTT server at *url* | ''
-password      | Optional password of of *username* on the MQTT server. | ''
+password      | Optional password for *username* on the MQTT server. | ''
 
 ### 'publication' properties
 
 Property      | Description | Default value
 ------------- | --- | ---
-root          | Optional string prefix to apply to all published topic names. | ''
+root          | Optional string prefix to apply to all published topic names. | 'fromsignalk/'
 paths         | Optional list of objects each of which defines a Signal K path and how it should be published to the MQTT server. Each object consists of the following properties.  | []
 path          | Required string specifying a Signal K path to the value that should be published to the MQTT server. | ''
 topic         | Optional string specifying the topic name to which the specified *path* value should be published. If this is left blank, then a topic name will be automatically created by substituting all periods in *path* with slashes. If a value has been supplied for *root*, then this will be prepended to the specified or computed topic name to obtain a finished topic name for publication. | ''
