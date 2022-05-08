@@ -9,6 +9,18 @@ per-item basis.
 
 ## Configuration
 
+The plugin recognises the following configuration properties.
+
+### Remote and local server configuration
+
+Property           | Description | Default value
+------------------ | --- | ---
+remotehost         | URL of MQTT server. | 'mqtt://myhost.net/'
+username           | Name of a valid user on *remotehost*. | ''
+password           | Password of *username* on *remotehost*. | ''
+rejectUnauthorised |
+subscriptionroot   |
+
 ## Operation
 
 ## Messages
