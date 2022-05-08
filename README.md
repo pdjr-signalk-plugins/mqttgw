@@ -16,7 +16,7 @@ The plugin recognises the following configuration properties.
 Property           | Description | Default value
 ------------------ | --- | ---
 url                | Required URL of MQTT server (for example, "mqtt://192.168.1.1"). | ''
-username           | Optional name of a login user on the MQTT server. | ''
+username           | Optional name of a login user on the MQTT server at *url* | ''
 password           | Optional password of of *username* on the MQTT server. | ''
 
 ### 'publication' properties
