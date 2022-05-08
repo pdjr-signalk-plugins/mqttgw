@@ -3,53 +3,70 @@
   "type": "object",
   "required": ["port"],
   "properties": {
-    "remoteHost": {
-      "type": "string",
-      "title": "MQTT server url (eg: mqtt://192.168.1.203)",
-      "description": "MQTT server that the paths listed below should be sent to",
-      "default": "mqtt://somehost"
-    },
-    "username": {
-      "type": "string",
-      "title": "MQTT server username"
-    },
-    "password": {
-      "type": "string",
-      "title": "MQTT server password"
-    },
-    "rejectUnauthorized": {
-      "type": "boolean",
-      "default": false,
-      "title": "Reject self signed and invalid server certificates"
-    },
-    "subscriptionroot": {
-      "type": "string",
-      "default": "mqtt.",
-      "title": "Where to place subscribed data in Signal K"
-    },
-    "paths": {
-      "type": "array",
-      "title": "Signal K self paths to send",
-      "default": [{ "path": "navigation.position", "topic": "navigation/position", "retain": true, "interval": 60 }],
-      "items": {
-        "type": "object",
-        "properties": {
-          "path": { "type": "string", "title": "Path", "default": "" },
-          "topic": { "title": "Publish a simple value to this topic", "type": "string" },
-          "retain": { "title": "Ask the server to retain the most recent value", "type": "boolean" },
-          "interval": { "type": "number", "title": "Minimum interval between updates for this path to be sent to the server" }
+    "broker": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "MQTT server url (eg: mqtt://192.168.1.203)",
+          "default": ""
+        },
+        "username": {
+          "type": "string",
+          "title": "MQTT server username",
+	  "default": ""
+        },
+        "password": {
+          "type": "string",
+          "title": "MQTT server password",
+	  "default": ""
         }
       }
     },
-    "topics": {
-      "type": "array",
-      "title": "MQTT paths to receive",
-      "default": [],
-      "items": {
-        "type": "object",
-        "properties": {
-          "topic": { "title": "Publish a simple value to this topic", "type": "string" },
-          "path": { "type": "string", "title": "Path", "default": "" }
+    "publication": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "type": "string",
+	  "title": "Prefix to apply to all published topic names",
+	  "default": ""
+	},
+	"paths": {
+          "type": "array",
+          "title": "Signal K self paths which should be published to the remote MQTT server",
+          "default": [{ "path": "navigation.position" }],
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string", "title": "Path", "default": "" },
+              "topic": { "title": "Publish a simple value to this topic", "type": "string", "default": "" },
+              "retain": { "title": "Ask the server to retain the most recent value", "type": "boolean", "default": true },
+              "interval": { "type": "number", "title": "Minimum interval between updates for this path to be sent to the server", "default": 60 }
+            },
+	    "required": [ "path" ]
+          }
+	}
+      }
+    },
+    "subscription": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "type": "string",
+          "title": "Prefix to apply to all received subscription paths",
+          "default": "mqtt."
+        },
+        "topics": {
+          "type": "array",
+          "title": "MQTT paths to receive",
+          "default": [],
+          "items": {
+            "type": "object",
+            "properties": {
+              "topic": { "title": "Receive a value from this topic", "type": "string" },
+              "path": { "type": "string", "title": "Path", "default": "" }
+            }
+          }
         }
       }
     }

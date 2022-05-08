@@ -41,13 +41,13 @@ module.exports = function(app) {
 
   plugin.start = function(options) {
     if (options) {
-      if (options.remoteHost != "") {
-        const client = mqtt.connect(options.remoteHost, {
-          rejectUnauthorized: options.rejectUnauthorized,
+      if (options.broker.url != "") {
+        const client = mqtt.connect(options.broker.url, {
+          rejectUnauthorized: true,
           reconnectPeriod: 60000,
           clientId: app.selfId,
-          username: options.username,
-          password: options.password
+          username: options.broker.username,
+          password: options.broker.password
         });
 
         client.on('error', (err) => {
@@ -56,14 +56,14 @@ module.exports = function(app) {
         });
 
         client.on('connect', () => {
-          log.N("MQTT client connected to %s (pub %d, sub %d)", options.remoteHost, options.paths.length, options.topics.length);
-          options.topics.forEach(topic => { client.subscribe(topic.topic); });
-          startSending(options.paths, client);
+          log.N("MQTT client connected to %s (pub %d, sub %d)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
+          options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
+          startSending(options.publication.paths, client);
           unsubscribes.push(_ => client.end());
         });
 
         client.on('message', function(topic, message) {
-          path = options.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscriptionroot + topic.replace(/\//g, "."))); 
+          path = options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscription.root + topic.replace(/\//g, "."))); 
           app.debug("received topic: %s, message: %s", path, message.toString());
           (new Delta(app,plugin.id)).addValue(path, message.toString()).commit().clear();
         });
