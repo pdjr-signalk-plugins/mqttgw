@@ -4,10 +4,10 @@
       "url": "mqtt://192.168.1.2",
       "username": "preeve",
       "password": "samsam",
-      "rejectunauthorised": false,
+      "rejectunauthorised": false
     },
     "publication": {
-      "root": "",
+      "root": "signalk/",
       "paths": [
         {
           "path": "notifications.interfacewatchdog",
@@ -106,374 +106,313 @@
         },
         {
           "path": "tanks.wasteWater.0.currentLevel",
-          "topic": "signalk/tanks/wastewater/0/currentlevel",
           "interval": 5,
           "retain": true
         },
         {
           "path": "tanks.wasteWater.0.capacity",
-          "topic": "signalk/tanks/wastewater/0/capacity",
           "interval": 300,
           "retain": true
         },
         {
           "path": "tanks.freshWater.1.currentLevel",
-          "topic": "signalk/tanks/freshwater/1/currentlevel",
           "interval": 5,
           "retain": true
         },
         {
           "path": "tanks.freshWater.1.capacity",
-          "topic": "signalk/tanks/freshwater/1/capacity",
           "interval": 300,
           "retain": true
         },
         {
           "path": "tanks.freshWater.2.currentLevel",
-          "topic": "signalk/tanks/freshwater/2/currentlevel",
           "interval": 5,
           "retain": true
         },
         {
           "path": "tanks.freshWater.2.capacity",
-          "topic": "signalk/tanks/freshwater/2/capacity",
           "interval": 300,
           "retain": true
         },
         {
           "path": "tanks.fuel.3.currentLevel",
-          "topic": "signalk/tanks/fuel/3/currentlevel",
           "interval": 5,
           "retain": true
         },
         {
           "path": "tanks.fuel.3.capacity",
-          "topic": "signalk/tanks/fuel/3/capacity",
           "interval": 300,
           "retain": true
         },
         {
           "path": "tanks.fuel.4.currentLevel",
-          "topic": "signalk/tanks/fuel/4/currentlevel",
           "interval": 5,
           "retain": true
         },
         {
           "path": "tanks.fuel.4.capacity",
-          "topic": "signalk/tanks/fuel/4/capacity",
           "interval": 300,
           "retain": true
         },
         {
           "path": "electrical.solar.279.controllerMode",
-          "topic": "signalk/electrical/solar/279/controllermode",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.current",
-          "topic": "signalk/electrical/solar/279/current",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.panelCurrent",
-          "topic": "signalk/electrical/solar/279/panelcurrent",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.panelPower",
-          "topic": "signalk/electrical/solar/279/panelpower",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.panelVoltage",
-          "topic": "signalk/electrical/solar/279/panelvoltage",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.voltage",
-          "topic": "signalk/electrical/solar/279/voltage",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.yieldToday",
-          "topic": "signalk/electrical/solar/279/yieldtoday",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.solar.279.yieldYesterday",
-          "topic": "signalk/electrical/solar/279/yieldyesterday",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.venus.dcPower",
-          "topic": "signalk/electrical/venus/dcpower",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.venus.acSource",
-          "topic": "signalk/electrical/venus/acsource",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.inverters.276.acout.power",
-          "topic": "signalk/electrical/inverters/276/acout/power",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.1.state",
-          "topic": "signalk/electrical/switches/bank/0/1/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.2.state",
-          "topic": "signalk/electrical/switches/bank/0/2/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.3.state",
-          "topic": "signalk/electrical/switches/bank/0/3/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.4.state",
-          "topic": "signalk/electrical/switches/bank/0/4/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.5.state",
-          "topic": "signalk/electrical/switches/bank/0/5/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.6.state",
-          "topic": "signalk/electrical/switches/bank/0/6/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.7.state",
-          "topic": "signalk/electrical/switches/bank/0/7/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.8.state",
-          "topic": "signalk/electrical/switches/bank/0/8/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.9.state",
-          "topic": "signalk/electrical/switches/bank/0/9/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.10.state",
-          "topic": "signalk/electrical/switches/bank/0/10/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.11.state",
-          "topic": "signalk/electrical/switches/bank/0/11/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.12.state",
-          "topic": "signalk/electrical/switches/bank/0/12/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.13.state",
-          "topic": "signalk/electrical/switches/bank/0/13/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.14.state",
-          "topic": "signalk/electrical/switches/bank/0/14/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.15.state",
-          "topic": "signalk/electrical/switches/bank/0/15/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.0.16.state",
-          "topic": "signalk/electrical/switches/bank/0/16/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.1.state",
-          "topic": "signalk/electrical/switches/bank/10/1/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.2.state",
-          "topic": "signalk/electrical/switches/bank/10/2/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.3.state",
-          "topic": "signalk/electrical/switches/bank/10/3/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.4.state",
-          "topic": "signalk/electrical/switches/bank/10/4/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.5.state",
-          "topic": "signalk/electrical/switches/bank/10/5/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.6.state",
-          "topic": "signalk/electrical/switches/bank/10/6/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.7.state",
-          "topic": "signalk/electrical/switches/bank/10/7/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.10.8.state",
-          "topic": "signalk/electrical/switches/bank/10/8/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.1.state",
-          "topic": "signalk/electrical/switches/bank/15/1/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.2.state",
-          "topic": "signalk/electrical/switches/bank/15/2/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.3.state",
-          "topic": "signalk/electrical/switches/bank/15/3/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.4.state",
-          "topic": "signalk/electrical/switches/bank/15/4/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.5.state",
-          "topic": "signalk/electrical/switches/bank/15/5/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.6.state",
-          "topic": "signalk/electrical/switches/bank/15/6/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.7.state",
-          "topic": "signalk/electrical/switches/bank/15/7/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.15.8.state",
-          "topic": "signalk/electrical/switches/bank/15/8/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.1.state",
-          "topic": "signalk/electrical/switches/bank/26/1/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.2.state",
-          "topic": "signalk/electrical/switches/bank/26/2/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.3.state",
-          "topic": "signalk/electrical/switches/bank/26/3/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.4.state",
-          "topic": "signalk/electrical/switches/bank/26/4/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.5.state",
-          "topic": "signalk/electrical/switches/bank/26/5/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.6.state",
-          "topic": "signalk/electrical/switches/bank/26/6/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.7.state",
-          "topic": "signalk/electrical/switches/bank/26/7/state",
           "interval": 5,
           "retain": true
         },
         {
           "path": "electrical.switches.bank.26.8.state",
-          "topic": "signalk/electrical/switches/bank/26/8/state",
           "interval": 5,
           "retain": true
         }
       ]
     },
     "subscription": {
-      "root": "",
+      "root": "mqtt.",
       "topics": [
         {
           "topic": "switch/solar_hot_water"
@@ -482,27 +421,22 @@
           "topic": "switch/anchor_light"
         },
         {
-          "topic": "switch/waste_discharge",
-          "path": ""
+          "topic": "switch/waste_discharge"
         },
         {
           "topic": "homeassistant/switch/binary_sensor.boiler"
         },
         {
-          "topic": "homeassistant/switch/binary_sensor.immersion1",
-          "path": ""
+          "topic": "homeassistant/switch/binary_sensor.immersion1"
         },
         {
-          "topic": "homeassistant/switch/binary_sensor.immersion2",
-          "path": ""
+          "topic": "homeassistant/switch/binary_sensor.immersion2"
         },
         {
-          "topic": "homeassistant/switch/binary_sensor.thermal_store",
-          "path": ""
+          "topic": "homeassistant/switch/binary_sensor.thermal_store"
         },
         {
-          "topic": "homeassistant/switch/binary_sensor.callforch",
-          "path": ""
+          "topic": "homeassistant/switch/binary_sensor.callforch"
         }
       ]
     }
