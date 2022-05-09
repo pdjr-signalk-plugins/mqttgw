@@ -58,5 +58,5 @@ path               | Optional string specifying a Signal K path where data recei
 ### Debug messages
 
 If the host system's DEBUG environment variable contains the value
-```pdjr-skplugin-mqttgw``` then the plugin will write every exchanged
-data value into Signal K's system log.
+```pdjr-skplugin-mqttgw``` then the plugin will log every exchanged
+data value.
