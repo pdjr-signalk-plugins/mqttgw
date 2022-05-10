@@ -9,7 +9,7 @@ publish and subscribe protocols.
 Frequency of export and retention behaviour can be set globally and on
 a per-item basis.
 
-If you are unfamiliar with MQTT then consult this [MQTT documentation)[https://mqtt.org].
+If you are unfamiliar with MQTT then consult this [MQTT documentation]([https://mqtt.org).
 
 ## Configuration
 The plugin recognises the following configuration properties.
