@@ -27,7 +27,7 @@ rejectunauthorised | Optional boolean value that does what exactly? | true
 
 Property           | Description | Default value
 ------------------ | --- | ---
-root               | Optional string prefix to apply to all published topic names. | 'fromsignalk/'
+root               | Optional string prefix to apply to all published topic names. | 'signalk/'
 paths              | Optional list of objects each of which defines a Signal K path and how it should be published to the MQTT server. | []
 retaindefault      | Optional boolean specifying the default topic retention type. | true
 intervaldefault    | Optional integer specifying the default minimum publication interval in seconds. | 5
@@ -45,7 +45,7 @@ interval           | Optional integer overriding *publication.intervaldefault*. 
 
 Property           | Description | Default value
 ------------------ | --- | ---
-root               | Optional string prefix to apply to the Signal K path name of all received subscription data. | 'frommqtt.'
+root               | Optional string prefix to apply to the Signal K path name of all received subscription data. | 'mqtt.'
 topics             | Optional list of objects each of which defines an MQTT topic and how it should be received into the Signal K data store. | []
 
 Each object in *subscription.topics* is characterised by the following properties.
