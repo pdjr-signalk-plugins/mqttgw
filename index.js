@@ -62,11 +62,11 @@ module.exports = function(app) {
         });
 
         client.on('error', (err) => {
-          log.E("MQTT connection error (%s)", err);
+          log.E("connection error (%s)", err);
         });
 
         client.on('connect', () => {
-          log.N("MQTT client connected to %s (pub %d, sub %d)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
+          log.N("connected to %s (publishing %d paths; subscribing to %d topics)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
           options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
           startSending(options.publication, client);
           unsubscribes.push(_ => client.end());
