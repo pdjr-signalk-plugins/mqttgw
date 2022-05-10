@@ -53,10 +53,10 @@
           "items": {
             "type": "object",
             "properties": {
-              "path": { "type": "string", "title": "Path", "default": "" },
-              "topic": { "title": "Publish a simple value to this topic", "type": "string", "default": "" },
-              "retain": { "title": "Ask the server to retain the most recent value", "type": "boolean", "default": true },
-              "interval": { "type": "number", "title": "Minimum interval between updates for this path to be sent to the server", "default": 60 }
+              "path": { "type": "string", "title": "Path" },
+              "topic": { "title": "Override the topic name automatically generates from path", "type": "string" },
+              "retain": { "title": "Override the default publication retain setting for this item", "type": "boolean" },
+              "interval": { "type": "number", "title": "Override the default interval between publication events for this item" }
             },
 	          "required": [ "path" ]
           }
@@ -78,9 +78,10 @@
           "items": {
             "type": "object",
             "properties": {
-              "topic": { "title": "Receive a value from this topic", "type": "string" },
-              "path": { "type": "string", "title": "Path", "default": "" }
-            }
+              "topic": { "title": "Topic", "type": "string" },
+              "path": { "type": "string", "title": "Override the path name automatically generated from topic" }
+            },
+            "required": [ "topic" ]
           }
         }
       }
