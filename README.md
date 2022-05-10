@@ -5,7 +5,11 @@ Exchange data between MQTT and Signal K.
 **pdjr-skplugin-mqttgw** provides a service for both exporting data to
 and importing data from a specified  MQTT server using MQTT's standard
 publish and subscribe protocols.
-The frequency of export can be set on a per-item basis.
+
+Frequency of export and retention behaviour can be set globally and on
+a per-item basis.
+
+If you are unfamiliar with MQTT then consult [mqtt.org](the MQTT documentation).
 
 ## Configuration
 The plugin recognises the following configuration properties.
@@ -34,8 +38,8 @@ Property           | Description | Default value
 ------------------ | --- | ---
 path               | Required string specifying a Signal K path to the value that should be published to the MQTT server. | ''
 topic              | Optional string specifying the topic name to which the specified *path* value should be published. If this is left blank, then a topic name will be automatically created by substituting all periods in *path* with slashes. If a value has been supplied for *publication.root*, then this will be prepended to the specified or computed topic name to obtain a finished topic name for publication. | ''
-retain             | Optional boolean specifying whether or not the MQTT server should be asked to retain published values (overriding *publication.retaindefault*). | *publication.retaindefault*
-interval           | Optional integer specifying the minimum interval in seconds at which values should be sent to the MQTT server (overriding *publication.intervaldefault*). | *publication.intervaldefault*
+retain             | Optional boolean overriding *publication.retaindefault*. | *publication.retaindefault*
+interval           | Optional integer overriding *publication.intervaldefault*. | *publication.intervaldefault*
 
 ### 'subscription' properties
 
