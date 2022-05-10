@@ -25,8 +25,8 @@ Property           | Description | Default value
 ------------------ | --- | ---
 root               | Optional string prefix to apply to all published topic names. | 'fromsignalk/'
 paths              | Optional list of objects each of which defines a Signal K path and how it should be published to the MQTT server. | []
-retaindefault      | Optional | true
-intervaldefault    | Optional integerspecifying the minimum interval | 60 
+retaindefault      | Optional boolean specifying the default topic retention type. | true
+intervaldefault    | Optional integer specifying the default minimum publication interval. | 60 
 
 Each object in *publication.paths* is characterised by the following properties.
 
@@ -34,8 +34,8 @@ Property           | Description | Default value
 ------------------ | --- | ---
 path               | Required string specifying a Signal K path to the value that should be published to the MQTT server. | ''
 topic              | Optional string specifying the topic name to which the specified *path* value should be published. If this is left blank, then a topic name will be automatically created by substituting all periods in *path* with slashes. If a value has been supplied for *publication.root*, then this will be prepended to the specified or computed topic name to obtain a finished topic name for publication. | ''
-retain             | Optional boolean specifying whether or not the MQTT server should be asked to retain published values. | *defaultretain*
-interval           | Optional integer specifying the minimum interval in seconds at which values should be sent to the MQTT server. | *publication.defaultinterval*
+retain             | Optional boolean specifying whether or not the MQTT server should be asked to retain published values. | *publication.retaindefault*
+interval           | Optional integer specifying the minimum interval in seconds at which values should be sent to the MQTT server. | *publication.intervaldefault*
 
 ### 'subscription' properties
 
