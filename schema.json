@@ -14,12 +14,17 @@
         "username": {
           "type": "string",
           "title": "MQTT server username",
-	  "default": ""
+	        "default": ""
         },
         "password": {
           "type": "string",
           "title": "MQTT server password",
-	  "default": ""
+	        "default": ""
+        },
+        "rejectunauthorised": {
+          "type": "boolean",
+          "title": "What is this?",
+          "default": true
         }
       }
     },
@@ -28,10 +33,20 @@
       "properties": {
         "root": {
           "type": "string",
-	  "title": "Prefix to apply to all published topic names",
-	  "default": ""
-	},
-	"paths": {
+	        "title": "Prefix to apply to all published topic names",
+	        "default": ""
+	      },
+        "retaindefault": {
+          "type": "boolean",
+          "title": "Default retain setting for published topic data",
+          "default": true
+        },
+        "intervaldefault": {
+          "type": "number",
+          "title": "Default minimum interval between topic updates in seconds",
+          "default": 60
+        },
+	      "paths": {
           "type": "array",
           "title": "Signal K self paths which should be published to the remote MQTT server",
           "default": [{ "path": "navigation.position" }],
@@ -43,9 +58,9 @@
               "retain": { "title": "Ask the server to retain the most recent value", "type": "boolean", "default": true },
               "interval": { "type": "number", "title": "Minimum interval between updates for this path to be sent to the server", "default": 60 }
             },
-	    "required": [ "path" ]
+	          "required": [ "path" ]
           }
-	}
+	      }
       }
     },
     "subscription": {

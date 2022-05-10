@@ -25,8 +25,8 @@ Property           | Description | Default value
 ------------------ | --- | ---
 root               | Optional string prefix to apply to all published topic names. | 'fromsignalk/'
 paths              | Optional list of objects each of which defines a Signal K path and how it should be published to the MQTT server. | []
-defaultretain.     | Optional | true
-defaultinterval    | Optional integerspecifying the minimum interval | 60 
+retaindefault      | Optional | true
+intervaldefault    | Optional integerspecifying the minimum interval | 60 
 
 Each object in *publication.paths* is characterised by the following properties.
 

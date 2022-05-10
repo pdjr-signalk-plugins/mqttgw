@@ -27,6 +27,9 @@ const PLUGIN_DESCRIPTION = "Exchange data with an MQTT server";
 const PLUGIN_SCHEMA_FILE = __dirname + "/schema.json";
 const PLUGIN_UISCHEMA_FILE = __dirname + "/uischema.json";
 
+const PUBLICATION_RETAIN_DEFAULT = true;
+const PUBLICATION_INTERVAL_DEFAULT = 60;
+
 module.exports = function(app) {
   var plugin = {};
   var unsubscribes = [];
@@ -65,7 +68,7 @@ module.exports = function(app) {
         client.on('connect', () => {
           log.N("MQTT client connected to %s (pub %d, sub %d)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
           options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
-          startSending(options.publication.paths, client);
+          startSending(options.publication, client);
           unsubscribes.push(_ => client.end());
         });
 
@@ -86,13 +89,15 @@ module.exports = function(app) {
     unsubscribes.forEach(f => f());
   };
 
-  function startSending(paths, client) {
-    paths.forEach(path => {
+  function startSending(publicationoptions, client) {
+    publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
         path.topic = ((path.root)?path.root:'') + ((path.topic) && (path.topic != ''))?path.topic:path.path.replace(/\./g, "/");
-        unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle((path.interval)?(path.interval * 1000):50).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
+        path.retain = (publicationoptions.retaindefault)?publicationoptions.retaindefault:PUBLICATION_RETAIN_DEFAULT;
+        path.interval = (publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT;
+        unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           app.debug("publishing topic: %s, message: %s", path.topic, "" + JSON.stringify(value.value));
-          client.publish(path.topic, "" + JSON.stringify(value.value), { qos: 1, retain: (path.retain || false) });
+          client.publish(path.topic, "" + JSON.stringify(value.value), { qos: 1, retain: path.retain });
         }));
       }
     });
