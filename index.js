@@ -202,7 +202,7 @@ module.exports = function(app) {
   function startSending(publicationoptions, client) {
     publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
-        path.topic = ((path.root)?path.root:'') + ((path.topic) && (path.topic != ''))?path.topic:path.path.replace(/\./g, "/");
+        path.topic = ((publicationoptions.root)?publicationoptions.root:'') + (((path.topic) && (path.topic != ''))?path.topic:(path.path.replace(/\./g, "/")));
         path.retain = (path.retain)?path.retain:((publicationoptions.retaindefault)?publicationoptions.retaindefault:PUBLICATION_RETAIN_DEFAULT);
         path.interval = (path.interval)?path.interval:((publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT);
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
