@@ -1,9 +1,21 @@
 # pdjr-skplugin-mqttgw
+
 Exchange data between MQTT and Signal K.
 
 ## Background
 
+I use
+[Home Assistant]()
+as a general purpose domestic automation system on my boat and it is
+a no-brainer to think about interoperability with Signal K.
+
+Home Assistant has excellent support for MQTT which can include an
+integrated MQTT broker.
+This plugin allows export of Signal K data paths to MQTT and import
+of MQTT topics into Signal K. 
+
 ## Description
+
 **pdjr-skplugin-mqttgw** provides a service for both exporting data to
 and importing data from a specified MQTT server.
 
