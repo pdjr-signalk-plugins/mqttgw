@@ -117,7 +117,6 @@ const PLUGIN_SCHEMA = {
     }
   }
 };
-
 const PLUGIN_UISCHEMA = {};
 
 const OPTIONS_DEFAULT = {
@@ -162,7 +161,7 @@ module.exports = function(app) {
   plugin.start = function(options) {
     if (Object.keys(options).length === 0) {
       options = OPTIONS_DEFAULT;
-      app.savePluginOptions(options, () => { log.N("installing default options"); });
+      app.savePluginOptions(options, () => { log.N("installing default options", false); });
     }
 
     if (options.broker.url != "") {
