@@ -187,8 +187,10 @@ module.exports = function(app) {
 
       client.on('message', function(topic, message) {
         path = options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscription.root + topic.replace(/\//g, "."))); 
-        app.debug("received topic: %s, message: %s", path, message.toString());
-        delta.addValue(path, message.toString()).commit().clear();
+        var value = message.toString();                                                                                                                           
+        if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
+        app.debug("received topic: %s, message: %s", path, value);                                                                                                
+        delta.addValue(path, value).commit().clear();                                                                                                             
       });
     } else {
       log.E("bad or missing configuration file");
