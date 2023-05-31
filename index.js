@@ -115,32 +115,32 @@ const PLUGIN_SCHEMA = {
         }
       }
     }
+  },
+  "required": [],
+  "default": {
+    "broker": {
+      "url": "mqtt://192.168.1.2",
+      "username": "username",
+      "password": "password",
+      "rejectunauthorised": false
+    },
+    "publication": {
+      "root": "signalk/",
+      "retaindefault": true,
+      "intervaldefault": 5,                                                                                                              
+      "paths": [
+        { "path": "navigation.position", "interval": 60 }
+      ]
+    },
+    "subscription": {
+      "root": "mqtt.",                                                                                                                                        
+      "topics": [
+        { "topic": "$SYS/broker/version" }
+      ]
+    }  
   }
 };
 const PLUGIN_UISCHEMA = {};
-
-const OPTIONS_DEFAULT = {
-  "broker": {
-    "url": "mqtt://192.168.1.2",
-    "username": "username",
-    "password": "password",
-    "rejectunauthorised": false
-  },
-  "publication": {
-    "root": "signalk/",
-    "retaindefault": true,
-    "intervaldefault": 5,                                                                                                              
-    "paths": [
-      { "path": "navigation.position", "interval": 60 }
-    ]
-  },
-  "subscription": {
-    "root": "mqtt.",                                                                                                                                        
-    "topics": [
-      { "topic": "$SYS/broker/version" }
-    ]
-  }
-}; 
 
 const PUBLICATION_RETAIN_DEFAULT = true;
 const PUBLICATION_INTERVAL_DEFAULT = 60;
@@ -160,11 +160,12 @@ module.exports = function(app) {
 
   plugin.start = function(options) {
     if (Object.keys(options).length === 0) {
-      options = OPTIONS_DEFAULT;
-      app.savePluginOptions(options, () => { log.N("installing default options", false); });
+      options = plugin.schema.default;
+      log.N("using default options", false);
     }
-
+    
     if (options.broker.url != "") {
+
       const client = mqtt.connect(options.broker.url, {
         rejectUnauthorized: (options.broker.rejectunauthorised)?options.broker.rejectunauthorised:true,
         reconnectPeriod: 60000,
@@ -174,12 +175,12 @@ module.exports = function(app) {
       });
 
       client.on('error', (err) => {
-        log.E("error connecting to MQTT broker at (%s)", options.broker.url);
-        log.E("reported error = %s", err, false);
+        log.N("stopped: error connecting to MQTT broker at '%s'", options.broker.url);
+        app.debug("reported connection error = %s", err);
       });
 
       client.on('connect', () => {
-        log.N("connected to %s (publishing %d paths; subscribing to %d topics)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
+        log.N("started: connected to '%s' (publishing %d paths; subscribing to %d topics)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
         options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
         startSending(options.publication, client);
         unsubscribes.push(_ => client.end());
@@ -192,8 +193,9 @@ module.exports = function(app) {
         app.debug("received topic: %s, message: %s", path, value);                                                                                                
         delta.addValue(path, value).commit().clear();                                                                                                             
       });
+
     } else {
-      log.E("bad or missing configuration file");
+      log.N("stopped: bad or missing configuration data");
     }
   }
 
