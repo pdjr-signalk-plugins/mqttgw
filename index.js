@@ -211,7 +211,7 @@ module.exports = function(app) {
         path.interval = (path.interval)?path.interval:((publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT);
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           app.debug("publishing topic: %s, message: %s", path.topic, "" + JSON.stringify(value.value));
-          client.publish(path.topic, "" + JSON.stringify(value.value), { qos: 1, retain: path.retain });
+          client.publish(path.topic, "" + value.value, { qos: 1, retain: path.retain });
         }));
       }
     });
