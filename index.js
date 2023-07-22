@@ -63,16 +63,16 @@ const PLUGIN_SCHEMA = {
           "type": "number",
           "title": "Default minimum interval between topic updates in seconds"
         },
-        "includemetadefault": {
+        "metadefault": {
           "type": "boolean",
           "title": "Publish any available meta data associated with a path"
         },
-	"paths": {
+	      "paths": {
           "type": "array",
           "title": "Signal K self paths which should be published to the remote MQTT server",
           "items": {
             "type": "object",
-	    "required": [ "path" ],
+	          "required": [ "path" ],
             "properties": {
               "path": {
                 "type": "string",
@@ -90,7 +90,7 @@ const PLUGIN_SCHEMA = {
                 "type": "number",
                 "title": "Override the default interval between publication events for this item"
               },
-              "includemeta": {
+              "meta": {
                 "type": "boolean",
                 "title": "Override the default setting for meta data publication"
               }
@@ -135,7 +135,8 @@ const PLUGIN_SCHEMA = {
     "publication": {
       "root": "signalk/",
       "retaindefault": true,
-      "intervaldefault": 5,                                                                                                              
+      "intervaldefault": 5,
+      "metadefault": false,                                                                                                              
       "paths": [
         { "path": "navigation.position", "interval": 60 }
       ]
@@ -152,7 +153,7 @@ const PLUGIN_UISCHEMA = {};
 
 const PUBLICATION_RETAIN_DEFAULT = true;
 const PUBLICATION_INTERVAL_DEFAULT = 60;
-const PUBLICATION_INCLUDEMETA_DEFAULT = false;
+const PUBLICATION_META_DEFAULT = false;
 
 module.exports = function(app) {
   var plugin = {};
@@ -220,18 +221,18 @@ module.exports = function(app) {
         path.topic = ((publicationoptions.root)?publicationoptions.root:'') + (((path.topic) && (path.topic != ''))?path.topic:(path.path.replace(/\./g, "/")));
         path.retain = (path.retain)?path.retain:((publicationoptions.retaindefault)?publicationoptions.retaindefault:PUBLICATION_RETAIN_DEFAULT);
         path.interval = (path.interval)?path.interval:((publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT);
-        path.includemeta = (path.includemeta)?path.includemeta:((publicationoptions.includemetadefault)?publicationoptions.includemetadefault:PUBLICATION_INCLUDEMETA_DEFAULT);
+        path.meta = (path.meta)?path.meta:((publicationoptions.metadefault)?publicationoptions.metadefault:PUBLICATION_META_DEFAULT);
 
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           app.debug("publishing topic: %s, message: %s", path.topic, JSON.stringify(value.value));
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
         
-          if (path.includemeta) {
+          if (path.meta) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
               app.debug("publishing topic: %s, message: %s", path.topic + "/meta", JSON.stringify(value.meta));
               client.publish(path.topic + "/meta", JSON.stringify(value.meta), { qos: 1, retain: true });
-              path.includemeta = false;
+              path.meta = false;
             }
           }
 
