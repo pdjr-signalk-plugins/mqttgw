@@ -53,8 +53,8 @@ const PLUGIN_SCHEMA = {
       "properties": {
         "root": {
           "type": "string",
-	        "title": "Prefix to apply to all published topic names"
-	      },
+          "title": "Prefix to apply to all published topic names"
+	},
         "retaindefault": {
           "type": "boolean",
           "title": "Default retain setting for published topic data"
@@ -62,6 +62,10 @@ const PLUGIN_SCHEMA = {
         "intervaldefault": {
           "type": "number",
           "title": "Default minimum interval between topic updates in seconds"
+        },
+        "metadefault": {
+          "type": "boolean",
+          "title": "Publish any available meta data associated with a path"
         },
 	      "paths": {
           "type": "array",
@@ -79,16 +83,20 @@ const PLUGIN_SCHEMA = {
                 "title": "Override the topic name automatically generates from path"
               },
               "retain": {
-                "type": "bool",
+                "type": "boolean",
                 "title": "Override the default publication retain setting for this item"
               },
               "interval": {
                 "type": "number",
                 "title": "Override the default interval between publication events for this item"
+              },
+              "meta": {
+                "type": "boolean",
+                "title": "Override the default setting for meta data publication"
               }
             }
           }
-	      }
+	}
       }
     },
     "subscription": {
@@ -127,7 +135,8 @@ const PLUGIN_SCHEMA = {
     "publication": {
       "root": "signalk/",
       "retaindefault": true,
-      "intervaldefault": 5,                                                                                                              
+      "intervaldefault": 5,
+      "metadefault": false,                                                                                                              
       "paths": [
         { "path": "navigation.position", "interval": 60 }
       ]
@@ -144,6 +153,7 @@ const PLUGIN_UISCHEMA = {};
 
 const PUBLICATION_RETAIN_DEFAULT = true;
 const PUBLICATION_INTERVAL_DEFAULT = 60;
+const PUBLICATION_META_DEFAULT = false;
 
 module.exports = function(app) {
   var plugin = {};
@@ -204,14 +214,28 @@ module.exports = function(app) {
   }
 
   function startSending(publicationoptions, client) {
+    var value;
+
     publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
         path.topic = ((publicationoptions.root)?publicationoptions.root:'') + (((path.topic) && (path.topic != ''))?path.topic:(path.path.replace(/\./g, "/")));
         path.retain = (path.retain)?path.retain:((publicationoptions.retaindefault)?publicationoptions.retaindefault:PUBLICATION_RETAIN_DEFAULT);
         path.interval = (path.interval)?path.interval:((publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT);
+        path.meta = (path.meta)?path.meta:((publicationoptions.metadefault)?publicationoptions.metadefault:PUBLICATION_META_DEFAULT);
+
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           app.debug("publishing topic: %s, message: %s", path.topic, JSON.stringify(value.value));
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
+        
+          if (path.meta) {
+            value = app.getSelfPath(path.path);
+            if ((value) && (value.meta)) {
+              app.debug("publishing topic: %s, message: %s", path.topic + "/meta", JSON.stringify(value.meta));
+              client.publish(path.topic + "/meta", JSON.stringify(value.meta), { qos: 1, retain: true });
+              path.meta = false;
+            }
+          }
+
         }));
       }
     });
