@@ -184,12 +184,12 @@ module.exports = function(app) {
         });
         
         client.on('error', (err) => {
-          log.E("Error on connection to MQTT broker at '%s'", options.broker.url);
+          log.E("error on connection to MQTT broker at '%s'", options.broker.url);
           app.debug("reported connection error = %s", err);
         });
         
         client.on('connect', () => {
-          log.N("Connected to broker at '%s'", options.broker.url);
+          log.N("connected to broker at '%s'", options.broker.url);
           if ((options.subscription) && (options.subscription.topics) && (Array.isArray(options.subscription.topics)) && (options.subscription.topics.length > 0)) {
             log.N("subscribing to %d topics", options.subscription.topics.length, false);
             options.subscription.topics.forEach(topic => {
@@ -214,10 +214,10 @@ module.exports = function(app) {
         });
 
       } else {
-        log.E("stopped: plugin configuration file broker property is missing or invalid");
+        log.E("plugin configuration file broker property is missing or invalid");
       }  
     } else {
-      log.N("stopped: plugin configuration file is missing or unusable");
+      log.W("plugin configuration file is missing or unusable");
     }
   }
 
