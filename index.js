@@ -27,7 +27,6 @@ const PLUGIN_SCHEMA = {
   "properties": {
     "broker": {
       "type": "object",
-      "required": [ "url", "username", "password", "rejectunauthorised" ],
       "properties": {
         "url": {
           "type": "string",
@@ -35,26 +34,27 @@ const PLUGIN_SCHEMA = {
         },
         "username": {
           "type": "string",
-          "title": "MQTT server username"
+          "title": "MQTT server client username"
         },
         "password": {
           "type": "string",
-          "title": "MQTT server password"
+          "title": "MQTT server client password"
         },
         "rejectunauthorised": {
           "type": "boolean",
           "title": "Reject unauthorised"
         }
-      }
+      },
+      "required": [ "url", "username", "password" ]
     },
     "publication": {
       "type": "object",
-      "required": [ "root", "retaindefault", "intervaldefault", "paths" ],
       "properties": {
         "root": {
           "type": "string",
-          "title": "Prefix to apply to all published topic names"
-	},
+          "title": "Prefix to apply to all published topic names",
+          "default": "signalk/"
+	      },
         "retaindefault": {
           "type": "boolean",
           "title": "Default retain setting for published topic data"
@@ -72,7 +72,6 @@ const PLUGIN_SCHEMA = {
           "title": "Signal K self paths which should be published to the remote MQTT server",
           "items": {
             "type": "object",
-	          "required": [ "path" ],
             "properties": {
               "path": {
                 "type": "string",
@@ -94,14 +93,15 @@ const PLUGIN_SCHEMA = {
                 "type": "boolean",
                 "title": "Override the default setting for meta data publication"
               }
-            }
+            },
+            "required": [ "path" ]
           }
-	}
-      }
+	      }
+      },
+      "required": [ "root", "paths" ]
     },
     "subscription": {
       "type": "object",
-      "required": [ "root", "topics" ],
       "properties": {
         "root": {
           "type": "string",
@@ -114,40 +114,18 @@ const PLUGIN_SCHEMA = {
           "default": [],
           "items": {
             "type": "object",
-            "required": [ "topic" ],
             "properties": {
               "topic": { "title": "Topic", "type": "string" },
               "path": { "type": "string", "title": "Override the path name automatically generated from topic" }
-            }
+            },
+            "required": [ "topic" ]
           }
         }
-      }
+      },
+      "required": [ "root", "topics" ]
     }
   },
-  "required": [],
-  "default": {
-    "broker": {
-      "url": "mqtt://192.168.1.2",
-      "username": "username",
-      "password": "password",
-      "rejectunauthorised": false
-    },
-    "publication": {
-      "root": "signalk/",
-      "retaindefault": true,
-      "intervaldefault": 5,
-      "metadefault": false,                                                                                                              
-      "paths": [
-        { "path": "navigation.position", "interval": 60 }
-      ]
-    },
-    "subscription": {
-      "root": "mqtt.",                                                                                                                                        
-      "topics": [
-        { "topic": "$SYS/broker/version" }
-      ]
-    }  
-  }
+  "required": [ "broker" ]
 };
 const PLUGIN_UISCHEMA = {};
 
