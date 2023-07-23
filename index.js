@@ -245,7 +245,7 @@ module.exports = function(app) {
           app.debug("updating topic '%s' with '%s'", path.topic, value);
         
           // Publish any selected and available meta data just once the
-          // first time a data topic is published.
+          // first time a data value is published.
           if (path.meta) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
