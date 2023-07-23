@@ -192,7 +192,10 @@ module.exports = function(app) {
           log.N("started: connected to broker at '%s'", options.broker.url);
           if ((options.subscription) && (options.subscription.topics) && (Array.isArray(options.subscription.topics)) && (options.subscription.topics.length > 0)) {
             log.N("subscribing to %d topics", options.subscription.topics.length, false);
-            options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
+            options.subscription.topics.forEach(topic => {
+              app.debug("subscribing to topic '%s'", topic.topic);
+              client.subscribe(topic.topic);
+            });
           }
           if ((options.publication) && (options.publication.paths) && (Array.isArray(options.publication.paths)) && (options.publication.paths.length > 0)) {
             log.N("publishing %d paths", options.publication.paths.length, false);
@@ -227,13 +230,17 @@ module.exports = function(app) {
 
     publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
+
         path.topic = ((publicationoptions.root)?publicationoptions.root:'') + (((path.topic) && (path.topic != ''))?path.topic:(path.path.replace(/\./g, "/")));
         path.retain = (path.retain)?path.retain:((publicationoptions.retaindefault)?publicationoptions.retaindefault:PUBLICATION_RETAIN_DEFAULT);
         path.interval = (path.interval)?path.interval:((publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT);
         path.meta = (path.meta)?path.meta:((publicationoptions.metadefault)?publicationoptions.metadefault:PUBLICATION_META_DEFAULT);
+        path.metatopic = path.topic + "/meta";
+
+        app.debug("publishing topic '%s'", path.topic);
+        if (path.meta) app.debug("publishing topic '%s'", path.metatopic);
 
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
-          app.debug("publishing topic: %s, message: %s", path.topic, JSON.stringify(value.value));
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
         
           // Publish any selected and available meta data just once the
@@ -241,8 +248,7 @@ module.exports = function(app) {
           if (path.meta) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
-              app.debug("publishing topic: %s, message: %s", path.topic + "/meta", JSON.stringify(value.meta));
-              client.publish(path.topic + "/meta", JSON.stringify(value.meta), { qos: 1, retain: true });
+              client.publish(path.metatopic, JSON.stringify(value.meta), { qos: 1, retain: true });
               path.meta = false;
             }
           }
