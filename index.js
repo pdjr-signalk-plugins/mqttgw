@@ -184,12 +184,12 @@ module.exports = function(app) {
         });
         
         client.on('error', (err) => {
-          log.E("stopped: error on connection to MQTT broker at '%s'", options.broker.url);
+          log.E("Error on connection to MQTT broker at '%s'", options.broker.url);
           app.debug("reported connection error = %s", err);
         });
         
         client.on('connect', () => {
-          log.N("started: connected to broker at '%s'", options.broker.url);
+          log.N("Connected to broker at '%s'", options.broker.url);
           if ((options.subscription) && (options.subscription.topics) && (Array.isArray(options.subscription.topics)) && (options.subscription.topics.length > 0)) {
             log.N("subscribing to %d topics", options.subscription.topics.length, false);
             options.subscription.topics.forEach(topic => {
@@ -242,6 +242,7 @@ module.exports = function(app) {
 
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
+          app.debug("updating topic '%s' with '%s'", path.topic, value);
         
           // Publish any selected and available meta data just once the
           // first time a data topic is published.
@@ -249,6 +250,7 @@ module.exports = function(app) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
               client.publish(path.metatopic, JSON.stringify(value.meta), { qos: 1, retain: true });
+              app.debug("updating topic '%s' with '%s'", path.metatopic, value);
               path.meta = false;
             }
           }
