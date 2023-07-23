@@ -6,9 +6,10 @@ Exchange data between MQTT and Signal K.
 
 I use
 [Home Assistant]()
-as a general purpose domestic automation system on my boat and it is
-a no-brainer to think about interoperability with Signal K and MQTT
-provides a nice mechanism that is well supported by Home Assistant.
+as a general purpose domestic automation system on my boat and it is a
+no-brainer to think about interoperability with Signal K.
+MQTT provides a nice mechanism that is well supported by Home
+Assistant.
 
 This plugin allows export of Signal K data paths to MQTT and import
 of MQTT topics into Signal K.
@@ -31,8 +32,8 @@ The plugin recognises the following configuration properties.
 Property           | Default | Description |
 :----------------- | :------ | :---------- |
 broker             | (none)  | Required object supplying connection details for the MQTT broker. |
-publication        | (none)  | Optional object supplying a ist of Signal K paths to be published on *broker*. |
-subscription       | (none)  | Optional object supplying a list of topics on *broker* that should be imported into Signal K. |
+publication        | (none)  | Optional object configuring MQTT publication settings for *broker*. |
+subscription       | (none)  | Optional object configuring MQTT subscription settings for *broker*. |
 
 The 'broker' object consists of the following properties which define
 the connection to an MQTT broker.
