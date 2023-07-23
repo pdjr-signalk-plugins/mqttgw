@@ -151,6 +151,9 @@ const PLUGIN_SCHEMA = {
 };
 const PLUGIN_UISCHEMA = {};
 
+const BROKER_RECONNECT_PERIOD = 60000;
+const BROKER_REJECT_UNAUTHORISED_DEFAULT = true;
+
 const PUBLICATION_RETAIN_DEFAULT = true;
 const PUBLICATION_INTERVAL_DEFAULT = 60;
 const PUBLICATION_META_DEFAULT = false;
@@ -169,43 +172,49 @@ module.exports = function(app) {
   const delta = new Delta(app, plugin.id);
 
   plugin.start = function(options) {
-    if (Object.keys(options).length === 0) {
-      options = plugin.schema.default;
-      log.N("using default options", false);
-    }
-    
-    if (options.broker.url != "") {
+    if (Object.keys(options).length > 0) {    
+      if ((options.broker) && (options.broker.url) && (options.broker.username) && (options.broker.password)) {
 
-      const client = mqtt.connect(options.broker.url, {
-        rejectUnauthorized: (options.broker.rejectunauthorised)?options.broker.rejectunauthorised:true,
-        reconnectPeriod: 60000,
-        clientId: app.selfId,
-        username: options.broker.username,
-        password: options.broker.password
-      });
+        const client = mqtt.connect(options.broker.url, {
+          rejectUnauthorized: (options.broker.rejectunauthorised)?options.broker.rejectunauthorised:BROKER_REJECT_UNAUTHORISED_DEFAULT,
+          reconnectPeriod: BROKER_RECONNECT_PERIOD,
+          clientId: app.selfId,
+          username: options.broker.username,
+          password: options.broker.password
+        });
+        
+        client.on('error', (err) => {
+          log.E("stopped: error on connection to MQTT broker at '%s'", options.broker.url);
+          app.debug("reported connection error = %s", err);
+        });
+        
+        client.on('connect', () => {
+          log.N("started: connected to broker at '%s'", options.broker.url);
+          if ((options.subscription) && (options.subscription.topics) && (Array.isArray(options.subscription.topics)) && (options.subscription.topics.length > 0)) {
+            log.N("subscribing to %d topics", options.subscription.topics.length, false);
+            options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
+          }
+          if ((options.publication) && (options.publication.paths) && (Array.isArray(options.publication.paths)) && (options.publication.paths.length > 0)) {
+            log.N("publishing %d paths", options.publication.paths.length, false);
+            startSending(options.publication, client);
+          }
+          unsubscribes.push(_ => client.end());
+        });
+        
+        client.on('message', function(topic, message) {
+          var path = options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscription.root + topic.replace(/\//g, "."))); 
+          var value = message.toString();                                                                                                                           
+          if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
+          if ((!isNaN(value)) && (!isNaN(parseInt(value)))) value = parseInt(value);                                                                                        
+          app.debug("received topic: %s, message: %s", path, value);                                                                                                
+          delta.addValue(path, value).commit().clear();                                                                                       
+        });
 
-      client.on('error', (err) => {
-        log.N("stopped: error connecting to MQTT broker at '%s'", options.broker.url);
-        app.debug("reported connection error = %s", err);
-      });
-
-      client.on('connect', () => {
-        log.N("started: connected to '%s' (publishing %d paths; subscribing to %d topics)", options.broker.url, options.publication.paths.length, options.subscription.topics.length);
-        options.subscription.topics.forEach(topic => { client.subscribe(topic.topic); });
-        startSending(options.publication, client);
-        unsubscribes.push(_ => client.end());
-      });
-
-      client.on('message', function(topic, message) {
-        path = options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscription.root + topic.replace(/\//g, "."))); 
-        var value = message.toString();                                                                                                                           
-        if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
-        app.debug("received topic: %s, message: %s", path, value);                                                                                                
-        delta.addValue(path, value).commit().clear();                                                                                                             
-      });
-
+      } else {
+        log.E("stopped: plugin configuration file broker property is missing or invalid");
+      }  
     } else {
-      log.N("stopped: bad or missing configuration data");
+      log.N("stopped: plugin configuration file is missing or unusable");
     }
   }
 
@@ -227,6 +236,8 @@ module.exports = function(app) {
           app.debug("publishing topic: %s, message: %s", path.topic, JSON.stringify(value.value));
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
         
+          // Publish any selected and available meta data just once the
+          // first time a data topic is published.
           if (path.meta) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
