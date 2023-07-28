@@ -192,7 +192,7 @@ module.exports = function(app) {
         });
 
       } else {
-        log.E("plugin configuration file broker property is missing or invalid");
+        log.E("plugin configuration broker property is missing or invalid");
       }  
     } else {
       log.W("plugin configuration file is missing or unusable");
