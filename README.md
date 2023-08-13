@@ -57,9 +57,8 @@ subscription
 }
 </pre></td>
 <td>
-</td>
 Specification of MQTT topics that should be subscribed to by Signal K. Optional.
-<tr>
+</td>
 </table>
 The broker object has four properties.
 <table>
