@@ -40,9 +40,10 @@ const PLUGIN_SCHEMA = {
           "type": "string",
           "title": "MQTT server client password"
         },
-        "rejectunauthorised": {
+        "rejectUnauthorised": {
           "type": "boolean",
-          "title": "Reject unauthorised"
+          "title": "Reject unauthorised",
+          "default": true
         }
       },
       "required": [ "url", "username", "password" ]
@@ -55,17 +56,20 @@ const PLUGIN_SCHEMA = {
           "title": "Prefix to apply to all published topic names",
           "default": "signalk/"
 	      },
-        "retaindefault": {
+        "retainDefault": {
           "type": "boolean",
-          "title": "Default retain setting for published topic data"
+          "title": "Default retain setting for published topic data",
+          "default": true
         },
-        "intervaldefault": {
+        "intervalDefault": {
           "type": "number",
-          "title": "Default minimum interval between topic updates in seconds"
+          "title": "Default minimum interval between topic updates in seconds",
+          "default": 60
         },
-        "metadefault": {
+        "metadDefault": {
           "type": "boolean",
-          "title": "Publish any available meta data associated with a path"
+          "title": "Publish any available meta data associated with a path",
+          "default": false
         },
 	      "paths": {
           "type": "array",
@@ -79,7 +83,7 @@ const PLUGIN_SCHEMA = {
               },
               "topic": {
                 "type": "string",
-                "title": "Override the topic name automatically generates from path"
+                "title": "Override the topic name automatically generated from path"
               },
               "retain": {
                 "type": "boolean",
@@ -95,10 +99,10 @@ const PLUGIN_SCHEMA = {
               }
             },
             "required": [ "path" ]
-          }
+          },
+          "default": []
 	      }
-      },
-      "required": [ "root", "paths" ]
+      }
     },
     "subscription": {
       "type": "object",
@@ -121,16 +125,29 @@ const PLUGIN_SCHEMA = {
             "required": [ "topic" ]
           }
         }
-      },
-      "required": [ "root", "topics" ]
+      }
     }
   },
-  "required": [ "broker" ]
+  "required": [ "broker" ],
+  "default": {
+    "broker": {
+      "url": "mqtt:127.0.0.1",
+      "username": "",
+      "password": "",
+    },
+    "publication": {
+      "root": "signalk/",
+      "paths": []
+    },
+    "subscription": {
+      "root": "mqtt.",
+      "topics": []
+    }
+  }
 };
 const PLUGIN_UISCHEMA = {};
 
 const BROKER_RECONNECT_PERIOD = 60000;
-const BROKER_REJECT_UNAUTHORISED_DEFAULT = true;
 
 const PUBLICATION_RETAIN_DEFAULT = true;
 const PUBLICATION_INTERVAL_DEFAULT = 60;
@@ -150,11 +167,15 @@ module.exports = function(app) {
   const delta = new Delta(app, plugin.id);
 
   plugin.start = function(options) {
-    if (Object.keys(options).length > 0) {    
+    if (Object.keys(options).length == 0) {
+      options = plugin.schema.properties.default;
+      app.savePluginConfiguration(options, () => { app.debug("saving default configuration"); });
+      log.W("plugin must be configured before use");
+    } else {
       if ((options.broker) && (options.broker.url) && (options.broker.username) && (options.broker.password)) {
 
         const client = mqtt.connect(options.broker.url, {
-          rejectUnauthorized: (options.broker.rejectunauthorised)?options.broker.rejectunauthorised:BROKER_REJECT_UNAUTHORISED_DEFAULT,
+          rejectUnauthorized: (options.broker.rejectUnauthorised || plugin.schema.properties.broker.rejectUnauthorised.default),
           reconnectPeriod: BROKER_RECONNECT_PERIOD,
           clientId: app.selfId,
           username: options.broker.username,
@@ -193,10 +214,8 @@ module.exports = function(app) {
 
       } else {
         log.E("plugin configuration broker property is missing or invalid");
-      }  
-    } else {
-      log.W("plugin configuration file is missing or unusable");
-    }
+      }
+    } 
   }
 
   plugin.stop = function() {
@@ -206,13 +225,18 @@ module.exports = function(app) {
   function startSending(publicationoptions, client) {
     var value;
 
+    publicationoptions.root = (publicationoptions.root || plugin.schema.properties.publication.root.default);
+    publicationoptions.retainDefault = (publicationoptions.retainDefault || plugin.schema.properties.publication.retainDefault.default);
+    publicationoptions.intervalDefault =(publicationoptions.intervalDefault || plugin.schema.properties.publication.intervalDefault.default);
+    publicationoptions.metadDefault = (publicationoptions.metadDefault || plugin.schema.properties.publication.metadDefault.default);
+
     publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
 
         path.topic = ((publicationoptions.root)?publicationoptions.root:'') + (((path.topic) && (path.topic != ''))?path.topic:(path.path.replace(/\./g, "/")));
-        path.retain = (path.retain)?path.retain:((publicationoptions.retaindefault)?publicationoptions.retaindefault:PUBLICATION_RETAIN_DEFAULT);
-        path.interval = (path.interval)?path.interval:((publicationoptions.intervaldefault)?publicationoptions.intervaldefault:PUBLICATION_INTERVAL_DEFAULT);
-        path.meta = (path.meta)?path.meta:((publicationoptions.metadefault)?publicationoptions.metadefault:PUBLICATION_META_DEFAULT);
+        path.retain = (path.retain || publicationoptions.retainDefault);
+        path.interval = (path.interval || publicationoptions.intervalDefault);
+        path.meta = (path.meta || publicationoptions.metadDefault);
         path.metatopic = path.topic + "/meta";
 
         app.debug("publishing topic '%s'", path.topic);
