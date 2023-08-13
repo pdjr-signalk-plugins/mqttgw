@@ -16,7 +16,7 @@ a per-item basis.
 The plugin recognises the following configuration properties.
 
 <table>
-<tr><th>Property&nbsp;name</th><th>Value&nbsp;default</th><th>Description</th></tr>
+<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
 <tr>
 <td>
 broker
@@ -39,7 +39,6 @@ publication
 <td><pre>
 {
   "paths": []
-  "root": "signalk/",
 }
 </pre></td>
 <td>
@@ -53,16 +52,15 @@ subscription
 <td><pre>
 {
   "topics": [],
-  "root": "mqtt."
 }
 </pre></td>
 <td>
 Specification of MQTT topics that should be subscribed to by Signal K. Optional.
 </td>
 </table>
-The broker object has four properties.
+The broker object has the following properties.
 <table>
-<tr><th>Property&nbsp;name</th><th>Value&nbsp;default</th><th>Description</th></tr>
+<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
 <tr>
 <td>url</td>
 <td><pre>"mqtt://127.0.0.1"</pre></td>
@@ -84,14 +82,36 @@ The broker object has four properties.
 <td>Boolean value that does what exactly? Optional.</td>
 </tr>
 </table>
-
-
-<tr><td>publication.paths</td><td>[]</td><td>Required list of objects each of which specifies a Signal K path that will be published.<tr><td>publication.root</td><td>"signalk/"</td><td>Prefix to apply to all published topic names.</td></tr>
-</td></tr>
-
-retaindefault      | true       | Optional boolean specifying the default topic retention type. |
-intervaldefault    | 5          | Optional integer specifying the default publication interval in seconds. |
-metadefault        | false      | Optional boolean specifying whether or not path meta data should also be published. |
+The publication object has the following properties.
+<table>
+<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
+<tr>
+<td>paths</td>
+<td><pre>[]</pre></td>
+<td>Array of *path* objects, each of which specifies a Signal K path that will be published to the MQTT server. Required.<td>
+</tr>
+<tr>
+<td>root</td>
+<td><pre>"signalk/"</pre></td>
+<td>Prefix to apply to all published topic names. Optional.</td>
+</tr>
+<tr>
+<td>retainDefault</td>
+<td><pre>true</pre></td>
+<td>Boolean specifying the default topic retention behaviour. Optional.</td>
+</tr>
+<tr>
+<td>intervalDefault</td>
+<td><pre>5</pre></td>
+<td>Integer specifying the default publication interval in seconds. Optional.</td>
+</tr>
+<tr>
+<td>metaDefault</td>
+<td><pre>false</pre></td>
+<td>Boolean specifying whether or not metadata should be published for each published path value. Optional.</td>
+</tr>
+</table>
+  |
 
 publication        | (none)  | Optional object configuring MQTT publication settings for *broker*. |
 subscription       | (none)  | Optional object configuring MQTT subscription settings for *broker*. |
