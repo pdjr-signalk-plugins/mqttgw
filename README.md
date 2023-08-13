@@ -2,28 +2,14 @@
 
 Exchange data between MQTT and Signal K.
 
-## Background
-
-I use
-[Home Assistant]()
-as a general purpose domestic automation system on my boat and it is a
-no-brainer to think about interoperability with Signal K.
-MQTT provides a nice mechanism that is well supported by Home
-Assistant.
-
-This plugin allows export of Signal K data paths to MQTT and import
-of MQTT topics into Signal K.
-
 ## Description
 
-**pdjr-skplugin-mqttgw** provides a service for both exporting data to
-and importing data from a specified MQTT server.
+**pdjr-skplugin-mqttgw** provides a service for exporting data to and
+importing data from an MQTT server.
 
-Frequency of export, retention behaviour and support for meta data can
-be set globally and on a per-item basis.
-
-If you are unfamiliar with MQTT then consult this
-[MQTT documentation](https://mqtt.org).
+Frequency and scope of export (i.e. whether or not to export metadata
+as well as values) and retention behaviour can be set globally and on
+a per-item basis.
 
 ## Configuration
 
@@ -43,16 +29,70 @@ broker
 }
 </pre></td>
 <td>
-Connection and authentication details for the MQTT broker which must be configured to suit your local installation.
+Object supplying connection and authentication details for the MQTT broker. Required.
 </td>
 </tr>
 <tr>
-<td>broker.url</td><td></td><td>Broker url.</td></tr>
-<tr><td>broker.username</td><td></td><td>Username for client connection on <em>broker.url</em>.</td></tr>
-<tr><td>broker.password</td><td></td><td>Password for <em>broker.username</em> on <em>broker.url</em>.</td></tr>
-<tr><td>broker.rejectUnauthorised</td><td></td><td>Optional boolean value that does what exactly?</td></tr>
-
+<td>
+publication
+</td>
+<td><pre>
+{
+  "paths": []
+  "root": "signalk/",
+}
+</pre></td>
+<td>
+Specification of Signal K paths that should be published to the broker. Optional.
+</td>
+</tr>
+<tr>
+<td>
+subscription
+</td>
+<td><pre>
+{
+  "topics": [],
+  "root": "mqtt."
+}
+</pre></td>
+<td>
+</td>
+Specification of MQTT topics that should be subscribed to by Signal K. Optional.
+<tr>
 </table>
+The broker object has four properties.
+<table>
+<tr><th>Property&nbsp;name</th><th>Value&nbsp;default</th><th>Description</th></tr>
+<tr>
+<td>url</td>
+<td><pre>"mqtt://127.0.0.1"</pre></td>
+<td>Broker url. Required.</td>
+</tr>
+<tr>
+<td>username</td>
+<td><pre>"username"</pre></td>
+<td>Username for client connection on <em>url</em>. Required.</td>
+</tr>
+<tr>
+<td>password</td>
+<td><pre>"password"</pre></td>
+<td>Password for <em>username</em> on <em>url</em>. Required.</td>
+</tr>
+<tr>
+<td>rejectUnauthorised</td>
+<td><pre>true</pre></td>
+<td>Boolean value that does what exactly? Optional.</td>
+</tr>
+</table>
+
+
+<tr><td>publication.paths</td><td>[]</td><td>Required list of objects each of which specifies a Signal K path that will be published.<tr><td>publication.root</td><td>"signalk/"</td><td>Prefix to apply to all published topic names.</td></tr>
+</td></tr>
+
+retaindefault      | true       | Optional boolean specifying the default topic retention type. |
+intervaldefault    | 5          | Optional integer specifying the default publication interval in seconds. |
+metadefault        | false      | Optional boolean specifying whether or not path meta data should also be published. |
 
 publication        | (none)  | Optional object configuring MQTT publication settings for *broker*. |
 subscription       | (none)  | Optional object configuring MQTT subscription settings for *broker*. |
