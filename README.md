@@ -29,9 +29,29 @@ If you are unfamiliar with MQTT then consult this
 
 The plugin recognises the following configuration properties.
 
-Property           | Default | Description |
-:----------------- | :------ | :---------- |
-broker             | (none)  | Required object supplying connection details for the MQTT broker. |
+<table>
+<tr><th>Property&nbsp;name</th><th>Value&nbsp;default</th><th>Description</th></tr>
+<tr>
+<td>
+broker
+</td>
+<td><pre>
+{
+  "url": "mqtt://127.0.0.1",
+  "username": "username",
+  "password": "password"
+}
+</pre></td>
+<td>
+Connection and authentication details for the MQTT broker which must be configured to suit your local installation.
+</td>
+</tr>
+<tr>
+<td>broker.url</td><td></td><td>Broker url.</td></tr>
+<td>broker.username</td><td></td><td>Username for client connection on *broker.url*.</td></tr>
+<td>broker.password</td><td></td><td>Password for *broker.username* on *broker.url*.</td></tr>
+</table>
+
 publication        | (none)  | Optional object configuring MQTT publication settings for *broker*. |
 subscription       | (none)  | Optional object configuring MQTT subscription settings for *broker*. |
 
