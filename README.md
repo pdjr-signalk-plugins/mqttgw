@@ -48,8 +48,10 @@ Connection and authentication details for the MQTT broker which must be configur
 </tr>
 <tr>
 <td>broker.url</td><td></td><td>Broker url.</td></tr>
-<td>broker.username</td><td></td><td>Username for client connection on *broker.url*.</td></tr>
-<td>broker.password</td><td></td><td>Password for *broker.username* on *broker.url*.</td></tr>
+<tr><td>broker.username</td><td></td><td>Username for client connection on *broker.url*.</td></tr>
+<tr><td>broker.password</td><td></td><td>Password for *broker.username* on *broker.url*.</td></tr>
+<tr><td>broker.rejectUnauthorised</td><td></td><td>Optional boolean value that does what exactly?</td></tr>
+
 </table>
 
 publication        | (none)  | Optional object configuring MQTT publication settings for *broker*. |
