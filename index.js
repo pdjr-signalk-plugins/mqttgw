@@ -136,11 +136,9 @@ const PLUGIN_SCHEMA = {
       "password": "",
     },
     "publication": {
-      "root": "signalk/",
       "paths": []
     },
     "subscription": {
-      "root": "mqtt.",
       "topics": []
     }
   }

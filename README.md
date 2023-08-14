@@ -161,30 +161,40 @@ The <em>subscription</em> object has the following properties.
 <tr>
 <td>topics</td>
 <td><pre>[]</pre></td>
-<td>Array of *topic* objects to which the plugin should subscribe how received values should be received into the Signal K data store. Required.</td>
+<td>Array of <em>topic</em> objects to which the plugin should subscribe. Required.</td>
 </tr>
 <tr>
 <td>root</td>
 <td><pre>"mqtt."</pre></td>
-<td>Prefix to apply to the Signal K path name of all subscribed topics. Optional.</td>
+<td>Prefix to apply to the Signal K path name of all subscribed <em>topics</em>. Optional.</td>
 </tr>
 </table>
 
-Each *topic* object has the following properties.
+Each <em>topic</em> object has the following properties.
 
-Property           | Default | Description |
-:----------------- | :------ | :--- |
-topic              | (none)  | Required string specifying the name of a topic on the MQTT server. |
-path               | (none)  | Optional string specifying a Signal K path where data received on *topic* should be saved (see below). |
-
-If *path* is left blank, then all slashes in *topic* will be replaced by
-periods and the result appended to *subscription.root* to generate a
+<table>
+<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
+<tr>
+<td>topic</td>
+<td>(none)</td>
+<td>Mame of a topic on the MQTT server. Required.</td>
+</tr>
+<tr>
+<td>path</td>
+<td>(none)<td>
+<td>
+Signal K path where data received on <em>topic<em> should be saved. |
+If omitted, then all slashes in <em>topic</em> will be replaced by
+periods and the result appended to <em>subscription.root</em> to generate a
 Signal K path name.
+</td>
+</tr>
+</table>
 
 ## Operation
 
 The plugin must be configured to suit local and user requirements
-before it can enter production. 
+before it can enter production.
 
 ## Author
 
