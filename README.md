@@ -58,7 +58,9 @@ subscription
 Specification of MQTT topics that should be subscribed to by Signal K. Optional.
 </td>
 </table>
+
 The <em>broker</em> object has the following properties.
+
 <table>
 <tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
 <tr>
@@ -82,7 +84,9 @@ The <em>broker</em> object has the following properties.
 <td>Boolean value that does what exactly? Optional.</td>
 </tr>
 </table>
+
 The <em>publication</em> object has the following properties.
+
 <table>
 <tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
 <tr>
@@ -181,7 +185,7 @@ Each <em>topic</em> object has the following properties.
 </tr>
 <tr>
 <td>path</td>
-<td>(none)<td>
+<td>(none)</td>
 <td>
 Signal K path where data received on <em>topic<em> should be saved. |
 If omitted, then all slashes in <em>topic</em> will be replaced by
