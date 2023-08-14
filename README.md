@@ -100,7 +100,7 @@ The <em>publication</em> object has the following properties.
 <tr>
 <td>paths</td>
 <td><pre>[]</pre></td>
-<td>Array of *path* objects, each of which specifies a Signal K path that will be published to the MQTT server. Required.<td>
+<td>Array of *path* objects (see below), each of which specifies a Signal K path that will be published to the MQTT server. Required.<td>
 </tr>
 <tr>
 <td>root</td>
