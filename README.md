@@ -61,8 +61,8 @@ Specification of MQTT topics that should be subscribed to by Signal K. Optional.
 
 Before use <em>broker</em> properties must be set to values which will
 allow the plugin access to your desired MQTT server.
-Of course, you must also specify some paths to publish and/or topics
-to subscribe to.
+Of course, you must also specify some *paths* to publish and/or
+*topics* to subscribe to.
 
 The remainder of this section details each configuration property and
 its purpose.
