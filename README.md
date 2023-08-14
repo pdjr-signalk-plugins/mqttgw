@@ -123,7 +123,9 @@ The <em>publication</em> object has the following properties.
 <td>Boolean specifying whether or not metadata should be published for each published path value. Optional.</td>
 </tr>
 </table>
+
 Each *path* object has the following properties.
+
 <table>
 <tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
 <tr>
