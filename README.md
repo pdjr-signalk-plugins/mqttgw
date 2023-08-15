@@ -138,31 +138,41 @@ Each *path* object has the following properties.
 <td>(none)</td>
 <td>
 Topic name to which <em>path</em> should be published.
-If <em>topic</em> is not specified, then its value is derived from
-<em>path</em> by replacing all periods in <em>path</em> with slashes.
-However derived, <em>topic</em> is contatenated to
-<em>publication.root</em> to generate an MQTT topic name for
-publication.
 Optional.
 </td>
 </tr>
 <tr>
 <td>retain</td>
 <td>(none)</td>
-<td>Boolean overriding <em>publication.retainDefault</em>. Optional.</td>
+<td>
+Boolean overriding <em>publication.retainDefault</em>.
+Optional.
+</td>
 </tr>
 <tr>
 <td>interval</td>
 <td>(none)</td>
-<td>Boolean overriding <em>publication.intervalDefault</em>. Optional.</td>
+<td>
+Boolean overriding <em>publication.intervalDefault</em>.
+Optional.
+</td>
 </tr>
 <tr>
 <td>meta</td>
 <td>(none)</td>
-<td>Boolean overriding <em>publication.metaDefault</em>. Optional.</td>
+<td>
+Boolean overriding <em>publication.metaDefault</em>.
+Optional.
+</td>
 </tr>
 </table>
 
+The topic name to which a *path* value is published can be specified
+explicitly by <em>topic</em>, or (if <em>topic</em> is omitted
+derived automatically by replacing all periods in <em>path</em> with slashes.
+However derived, <em>topic</em> is contatenated to
+<em>publication.root</em> to generate an MQTT topic name for
+publication.
 Values published to the generated topic name result from applying
 JSON.stringify() to the Signal K path value.
 If publication of metadata associated with *path* is requested then
