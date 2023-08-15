@@ -197,13 +197,13 @@ Optional.
 The topic name to which a *path* value is published can be specified
 explicitly by <em>topic</em>, or, if <em>topic</em> is omitted, it will
 be computed by replacing all periods in <em>path</em> with slashes.
-However derived, <em>topic</em> is contatenated to
-<em>publication.root</em> to generate an MQTT topic name for
+However derived, <em>topic</em> is concatenated to
+<em>publication.root</em> to generate a final MQTT topic name for
 publication.
 Values published to the generated topic name result from applying
-JSON.stringify() to the Signal K path value.
-If publication of metadata associated with *path* is requested then
-such data is published on "<em>topic-name</em>/meta".
+JSON.stringify() to the value on Signal K <em>path</em>.
+If the publication of <em>path</em>'s metadata associated is requested,
+then such data is published on "<em>topic-name</em>/meta".
 
 The <em>subscription</em> object has the following properties.
 
@@ -212,12 +212,18 @@ The <em>subscription</em> object has the following properties.
 <tr>
 <td>topics</td>
 <td><pre>[]</pre></td>
-<td>Array of <em>topic</em> objects to which the plugin should subscribe. Required.</td>
+<td>
+Array of <em>topic</em> objects (see below) to which the plugin should subscribe.
+Required.
+</td>
 </tr>
 <tr>
 <td>root</td>
 <td><pre>"mqtt."</pre></td>
-<td>Prefix to apply to the Signal K path name of all subscribed <em>topics</em>. Optional.</td>
+<td>
+Prefix to apply to the Signal K path name of all subscribed <em>topics</em>.
+Optional.
+</td>
 </tr>
 </table>
 
@@ -228,19 +234,25 @@ Each <em>topic</em> object has the following properties.
 <tr>
 <td>topic</td>
 <td>(none)</td>
-<td>Mame of a topic on the MQTT server. Required.</td>
+<td>
+Name of a topic on the MQTT server.
+Required.
+</td>
 </tr>
 <tr>
 <td>path</td>
 <td>(none)</td>
 <td>
-Signal K path where data received on <em>topic<em> should be saved. |
-If omitted, then all slashes in <em>topic</em> will be replaced by
-periods and the result appended to <em>subscription.root</em> to generate a
-Signal K path name.
+Signal K path where data received on <em>topic<em> should be saved.
+Optional.
 </td>
 </tr>
 </table>
+
+If <em>path</em> is omitted, then a value is generated automatically by replacing
+all slashes in <em>topic</em> with periods.
+A final Signal K path name results from appending the specified or computed path to
+<em>subscription.root</em>.
 
 ## Operation
 
