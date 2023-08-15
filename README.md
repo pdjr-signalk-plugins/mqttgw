@@ -89,7 +89,7 @@ The <em>broker</em> object has the following properties.
 <tr>
 <td>rejectUnauthorised</td>
 <td><pre>true</pre></td>
-<td>Boolean value that does what exactly? Optional.</td>
+<td>Optional.</td>
 </tr>
 </table>
 
