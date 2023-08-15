@@ -74,17 +74,26 @@ The <em>broker</em> object has the following properties.
 <tr>
 <td>url</td>
 <td><pre>"mqtt://127.0.0.1"</pre></td>
-<td>Broker url. Required.</td>
+<td>
+Broker url.
+Required.
+</td>
 </tr>
 <tr>
 <td>username</td>
 <td><pre>"username"</pre></td>
-<td>Username for client connection on <em>url</em>. Required.</td>
+<td>
+Username for client connection on <em>url</em>.
+Required.
+</td>
 </tr>
 <tr>
 <td>password</td>
 <td><pre>"password"</pre></td>
-<td>Password for <em>username</em> on <em>url</em>. Required.</td>
+<td>
+Password for <em>username</em> on <em>url</em>.
+Required.
+</td>
 </tr>
 <tr>
 <td>rejectUnauthorised</td>
@@ -100,27 +109,42 @@ The <em>publication</em> object has the following properties.
 <tr>
 <td>paths</td>
 <td><pre>[]</pre></td>
-<td>Array of *path* objects (see below), each of which specifies a Signal K path that will be published to the MQTT server. Required.<td>
+<td>
+Array of <em>path</em> objects (see below), each of which specifies a Signal K path that will be published to the MQTT server.
+Required.
+<td>
 </tr>
 <tr>
 <td>root</td>
 <td><pre>"signalk/"</pre></td>
-<td>Prefix to apply to all published topic names. Optional.</td>
+<td>
+Prefix to apply to all published topic names.
+Optional.
+</td>
 </tr>
 <tr>
 <td>retainDefault</td>
 <td><pre>true</pre></td>
-<td>Boolean specifying the default topic retention behaviour. Optional.</td>
+<td>
+Boolean specifying the default topic retention behaviour.
+Optional.
+</td>
 </tr>
 <tr>
 <td>intervalDefault</td>
 <td><pre>5</pre></td>
-<td>Integer specifying the default publication interval in seconds. Optional.</td>
+<td>
+Integer specifying the default publication interval in seconds.
+Optional.
+</td>
 </tr>
 <tr>
 <td>metaDefault</td>
 <td><pre>false</pre></td>
-<td>Boolean specifying whether or not metadata should be published for each published path value. Optional.</td>
+<td>
+Boolean specifying whether or not metadata should be published for each published path value.
+Optional.
+</td>
 </tr>
 </table>
 
@@ -131,7 +155,10 @@ Each *path* object has the following properties.
 <tr>
 <td>path</td>
 <td>(none)</td>
-<td>Signal K path to a value that should be published on the MQTT server. Required.</td>
+<td>
+Signal K path to a value that should be published on the MQTT server.
+Required.
+</td>
 </tr>
 <tr>
 <td>topic</td>
@@ -168,8 +195,8 @@ Optional.
 </table>
 
 The topic name to which a *path* value is published can be specified
-explicitly by <em>topic</em>, or (if <em>topic</em> is omitted
-derived automatically by replacing all periods in <em>path</em> with slashes.
+explicitly by <em>topic</em>, or, if <em>topic</em> is omitted, it will
+be computed by replacing all periods in <em>path</em> with slashes.
 However derived, <em>topic</em> is contatenated to
 <em>publication.root</em> to generate an MQTT topic name for
 publication.
