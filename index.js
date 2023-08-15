@@ -133,7 +133,7 @@ const PLUGIN_SCHEMA = {
     "broker": {
       "url": "mqtt:127.0.0.1",
       "username": "",
-      "password": "",
+      "password": ""
     },
     "publication": {
       "paths": []
@@ -146,10 +146,6 @@ const PLUGIN_SCHEMA = {
 const PLUGIN_UISCHEMA = {};
 
 const BROKER_RECONNECT_PERIOD = 60000;
-
-const PUBLICATION_RETAIN_DEFAULT = true;
-const PUBLICATION_INTERVAL_DEFAULT = 60;
-const PUBLICATION_META_DEFAULT = false;
 
 module.exports = function(app) {
   var plugin = {};
@@ -166,8 +162,8 @@ module.exports = function(app) {
 
   plugin.start = function(options) {
     if (Object.keys(options).length == 0) {
-      options = plugin.schema.properties.default;
-      app.savePluginConfiguration(options, () => { app.debug("saving default configuration"); });
+      options = plugin.schema.default;
+      app.savePluginOptions(options, () => { app.debug("saving default configuration"); });
       log.W("plugin must be configured before use");
     } else {
       if ((options.broker) && (options.broker.url) && (options.broker.username) && (options.broker.password)) {
@@ -182,7 +178,7 @@ module.exports = function(app) {
         
         client.on('error', (err) => {
           log.E("error on connection to MQTT broker at '%s'", options.broker.url);
-          app.debug("reported connection error = %s", err);
+          app.debug("connection error: %s", err);
         });
         
         client.on('connect', () => {
@@ -211,7 +207,7 @@ module.exports = function(app) {
         });
 
       } else {
-        log.E("plugin configuration broker property is missing or invalid");
+        log.E("configuration broker property is missing or invalid");
       }
     } 
   }
