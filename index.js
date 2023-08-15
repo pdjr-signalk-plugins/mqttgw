@@ -66,7 +66,7 @@ const PLUGIN_SCHEMA = {
           "title": "Default minimum interval between topic updates in seconds",
           "default": 60
         },
-        "metadDefault": {
+        "metaDefault": {
           "type": "boolean",
           "title": "Publish any available meta data associated with a path",
           "default": false
@@ -169,7 +169,7 @@ module.exports = function(app) {
       if ((options.broker) && (options.broker.url) && (options.broker.username) && (options.broker.password)) {
 
         const client = mqtt.connect(options.broker.url, {
-          rejectUnauthorized: (options.broker.rejectUnauthorised || plugin.schema.properties.broker.rejectUnauthorised.default),
+          rejectUnauthorized: (options.broker.rejectUnauthorised || plugin.schema.properties.broker.properties.rejectUnauthorised.default),
           reconnectPeriod: BROKER_RECONNECT_PERIOD,
           clientId: app.selfId,
           username: options.broker.username,
@@ -219,10 +219,10 @@ module.exports = function(app) {
   function startSending(publicationoptions, client) {
     var value;
 
-    publicationoptions.root = (publicationoptions.root || plugin.schema.properties.publication.root.default);
-    publicationoptions.retainDefault = (publicationoptions.retainDefault || plugin.schema.properties.publication.retainDefault.default);
-    publicationoptions.intervalDefault =(publicationoptions.intervalDefault || plugin.schema.properties.publication.intervalDefault.default);
-    publicationoptions.metadDefault = (publicationoptions.metadDefault || plugin.schema.properties.publication.metadDefault.default);
+    publicationoptions.root = (publicationoptions.root || plugin.schema.properties.publication.properties.root.default);
+    publicationoptions.retainDefault = (publicationoptions.retainDefault || plugin.schema.properties.publication.properties.retainDefault.default);
+    publicationoptions.intervalDefault =(publicationoptions.intervalDefault || plugin.schema.properties.publication.properties.intervalDefault.default);
+    publicationoptions.metadDefault = (publicationoptions.metadDefault || plugin.schema.properties.publication.properties.metaDefault.default);
 
     publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
