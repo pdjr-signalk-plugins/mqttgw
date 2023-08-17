@@ -4,12 +4,11 @@ Exchange data between MQTT and Signal K.
 
 ## Description
 
-**pdjr-skplugin-mqttgw** provides a service for exporting data to and
-importing data from an MQTT server.
+**pdjr-skplugin-mqttgw** exports data to and imports data from an
+MQTT server.
 
-Frequency and scope of export (i.e. whether or not to export metadata
-as well as values) and retention behaviour can be set globally and on
-a per-item basis.
+Export frequency, scope and retention behaviour can be set globally
+and on a per-item basis.
 
 ## Configuration
 
