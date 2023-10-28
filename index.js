@@ -172,8 +172,8 @@ module.exports = function(app) {
         rejectUnauthorized: plugin.options.broker.rejectUnauthorised,
         reconnectPeriod: BROKER_RECONNECT_PERIOD,
         clientId: app.selfId,
-        username: plugin.options.broker.mqttClientCredentials.split(':')[0].trim();
-        password: plugin.options.broker.mqttClientCredentials.split(':')[1].trim();
+        username: plugin.options.broker.mqttClientCredentials.split(':')[0].trim(),
+        password: plugin.options.broker.mqttClientCredentials.split(':')[1].trim()
       }
     );
         
