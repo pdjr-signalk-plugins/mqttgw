@@ -28,48 +28,47 @@ const PLUGIN_SCHEMA = {
     "broker": {
       "type": "object",
       "properties": {
-        "url": {
-          "type": "string",
-          "title": "MQTT server url (eg: mqtt://192.168.1.203)"
+        "mqttBrokerUrl": {
+          "title": "MQTT broker url (eg: mqtt://192.168.1.203)",
+          "type": "string"
         },
-        "username": {
-          "type": "string",
-          "title": "MQTT server client username"
-        },
-        "password": {
-          "type": "string",
-          "title": "MQTT server client password"
+        "mqttClientCredentials": {
+          "title": "MQTT server credentials (as 'username:password')",
+          "type": "string"
         },
         "rejectUnauthorised": {
-          "type": "boolean",
           "title": "Reject unauthorised",
-          "default": true
+          "type": "boolean"
         }
       },
-      "required": [ "url", "username", "password" ]
+      "required": [
+        "mqttBrokerUrl",
+        "mqttClientCredentials"
+      ],
+      "default": {
+        "mqttBrokerUrl": "mqtt:127.0.0.1",
+        "mqttClientCredentials": "username:password",
+        "rejectUnauthorised": true
+      }
     },
     "publication": {
       "type": "object",
       "properties": {
         "root": {
-          "type": "string",
           "title": "Prefix to apply to all published topic names",
-          "default": "signalk/"
+          "type": "string"
 	      },
         "retainDefault": {
-          "type": "boolean",
           "title": "Default retain setting for published topic data",
-          "default": true
+          "type": "boolean"
         },
         "intervalDefault": {
-          "type": "number",
           "title": "Default minimum interval between topic updates in seconds",
-          "default": 60
+          "type": "number"
         },
         "metaDefault": {
-          "type": "boolean",
           "title": "Publish any available meta data associated with a path",
-          "default": false
+          "type": "boolean",
         },
 	      "paths": {
           "type": "array",
@@ -97,10 +96,8 @@ const PLUGIN_SCHEMA = {
                 "type": "boolean",
                 "title": "Override the default setting for meta data publication"
               }
-            },
-            "required": [ "path" ]
-          },
-          "default": []
+            }
+          }
 	      }
       }
     },
@@ -108,9 +105,8 @@ const PLUGIN_SCHEMA = {
       "type": "object",
       "properties": {
         "root": {
-          "type": "string",
           "title": "Prefix to apply to all received subscription paths",
-          "default": "mqtt."
+          "type": "string"
         },
         "topics": {
           "type": "array",
@@ -121,24 +117,27 @@ const PLUGIN_SCHEMA = {
             "properties": {
               "topic": { "title": "Topic", "type": "string" },
               "path": { "type": "string", "title": "Override the path name automatically generated from topic" }
-            },
-            "required": [ "topic" ]
+            }
           }
         }
       }
     }
   },
-  "required": [ "broker" ],
   "default": {
     "broker": {
-      "url": "mqtt:127.0.0.1",
-      "username": "",
-      "password": ""
+      "mqttBrokerUrl": "mqtt:127.0.0.1",
+      "mqttClientCredentials": "username:password",
+      "rejectUnauthorised": true
     },
     "publication": {
+      "root": "signalk/",
+      "retainDefault": true,
+      "intervalDefault": 60,
+      "metaDefault": false,
       "paths": []
     },
     "subscription": {
+      "root": "mqtt.",
       "topics": []
     }
   }
@@ -161,55 +160,52 @@ module.exports = function(app) {
   const delta = new Delta(app, plugin.id);
 
   plugin.start = function(options) {
-    if (Object.keys(options).length == 0) {
-      options = plugin.schema.default;
-      app.savePluginOptions(options, () => { app.debug("saving default configuration"); });
-      log.W("plugin must be configured before use");
-    } else {
-      if ((options.broker) && (options.broker.url) && (options.broker.username) && (options.broker.password)) {
+    plugin.options = {};
+    plugin.options.broker = { ...plugin.schema.properties.broker.default, ...options.broker };
+    plugin.options.publication = { ...plugin.schema.properties.publication.default, ...options.publication };
+    plugin.options.subscription = { ...plugin.schema.properties.subscription.default, ...options.subscription };
+    app.debug(`using configuration: ${JSON.stringify(plugin.options, null, 2)}`)
 
-        const client = mqtt.connect(options.broker.url, {
-          rejectUnauthorized: (options.broker.rejectUnauthorised || plugin.schema.properties.broker.properties.rejectUnauthorised.default),
-          reconnectPeriod: BROKER_RECONNECT_PERIOD,
-          clientId: app.selfId,
-          username: options.broker.username,
-          password: options.broker.password
-        });
-        
-        client.on('error', (err) => {
-          log.E("error on connection to MQTT broker at '%s'", options.broker.url);
-          app.debug("connection error: %s", err);
-        });
-        
-        client.on('connect', () => {
-          log.N("connected to broker at '%s'", options.broker.url);
-          if ((options.subscription) && (options.subscription.topics) && (Array.isArray(options.subscription.topics)) && (options.subscription.topics.length > 0)) {
-            log.N("subscribing to %d topics", options.subscription.topics.length, false);
-            options.subscription.topics.forEach(topic => {
-              app.debug("subscribing to topic '%s'", topic.topic);
-              client.subscribe(topic.topic);
-            });
-          }
-          if ((options.publication) && (options.publication.paths) && (Array.isArray(options.publication.paths)) && (options.publication.paths.length > 0)) {
-            log.N("publishing %d paths", options.publication.paths.length, false);
-            startSending(options.publication, client);
-          }
-          unsubscribes.push(_ => client.end());
-        });
-        
-        client.on('message', function(topic, message) {
-          var path = options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (options.subscription.root + topic.replace(/\//g, "."))); 
-          var value = message.toString();                                                                                                                           
-          if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
-          if ((!isNaN(value)) && (!isNaN(parseInt(value)))) value = parseInt(value);                                                                                        
-          app.debug("received topic: %s, message: %s", path, value);                                                                                                
-          delta.addValue(path, value).commit().clear();                                                                                       
-        });
-
-      } else {
-        log.E("configuration broker property is missing or invalid");
+    const client = mqtt.connect(
+      plugin.options.broker.mqttBrokerUrl,
+      {
+        rejectUnauthorized: plugin.options.broker.rejectUnauthorised,
+        reconnectPeriod: BROKER_RECONNECT_PERIOD,
+        clientId: app.selfId,
+        username: plugin.options.broker.mqttClientCredentials.split(':')[0].trim();
+        password: plugin.options.broker.mqttClientCredentials.split(':')[1].trim();
       }
-    } 
+    );
+        
+    client.on('error', (err) => {
+      log.E("error on connection to MQTT broker at '%s'", plugin.options.broker.mqttBrokerUrl);
+      app.debug("connection error: %s", err);
+    });
+        
+    client.on('connect', () => {
+      log.N("connected to broker at '%s'", plugin.options.broker.mqttBrokerUrl);
+      if ((plugin.options.subscription) && (plugin.options.subscription.topics) && (Array.isArray(plugin.options.subscription.topics)) && (plugin.options.subscription.topics.length > 0)) {
+        log.N("subscribing to %d topics", plugin.options.subscription.topics.length, false);
+        plugin.options.subscription.topics.forEach(topic => {
+          app.debug("subscribing to topic '%s'", topic.topic);
+          client.subscribe(topic.topic);
+        });
+      }
+      if ((plugin.options.publication) && (plugin.options.publication.paths) && (Array.isArray(plugin.options.publication.paths)) && (plugin.options.publication.paths.length > 0)) {
+        log.N("publishing %d paths", plugin.options.publication.paths.length, false);
+        startSending(plugin.options.publication, client);
+      }
+      unsubscribes.push(_ => client.end());
+    });
+        
+    client.on('message', function(topic, message) {
+      var path = plugin.options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (plugin.options.subscription.root + topic.replace(/\//g, "."))); 
+      var value = message.toString();                                                                                                                           
+      if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
+      if ((!isNaN(value)) && (!isNaN(parseInt(value)))) value = parseInt(value);                                                                                        
+      app.debug("received topic: %s, message: %s", path, value);                                                                                                
+      delta.addValue(path, value).commit().clear();                                                                                       
+    });
   }
 
   plugin.stop = function() {
@@ -218,11 +214,6 @@ module.exports = function(app) {
 
   function startSending(publicationoptions, client) {
     var value;
-
-    publicationoptions.root = (publicationoptions.root || plugin.schema.properties.publication.properties.root.default);
-    publicationoptions.retainDefault = (publicationoptions.retainDefault || plugin.schema.properties.publication.properties.retainDefault.default);
-    publicationoptions.intervalDefault =(publicationoptions.intervalDefault || plugin.schema.properties.publication.properties.intervalDefault.default);
-    publicationoptions.metadDefault = (publicationoptions.metadDefault || plugin.schema.properties.publication.properties.metaDefault.default);
 
     publicationoptions.paths.forEach(path => {
       if ((path.path) && (path.path != '')) {
