@@ -178,21 +178,20 @@ module.exports = function(app) {
     );
         
     client.on('error', (err) => {
-      log.E("error on connection to MQTT broker at '%s'", plugin.options.broker.mqttBrokerUrl);
-      app.debug("connection error: %s", err);
+      log.E(`MQTT broker connection error (${err})`, false);
     });
         
     client.on('connect', () => {
-      log.N("connected to broker at '%s'", plugin.options.broker.mqttBrokerUrl);
+      log.N(`connected to broker ${plugin.options.broker.mqttBrokerUrl}`);
       if ((plugin.options.subscription) && (plugin.options.subscription.topics) && (Array.isArray(plugin.options.subscription.topics)) && (plugin.options.subscription.topics.length > 0)) {
-        log.N("subscribing to %d topics", plugin.options.subscription.topics.length, false);
+        app.debug(`subscribing to ${plugin.options.subscription.topics.length}`);
         plugin.options.subscription.topics.forEach(topic => {
-          app.debug("subscribing to topic '%s'", topic.topic);
+          app.debug(`subscribing to topic '${topic.topic}'`);
           client.subscribe(topic.topic);
         });
       }
       if ((plugin.options.publication) && (plugin.options.publication.paths) && (Array.isArray(plugin.options.publication.paths)) && (plugin.options.publication.paths.length > 0)) {
-        log.N("publishing %d paths", plugin.options.publication.paths.length, false);
+        app.debug(`publishing ${plugin.options.publication.paths.length} paths`);
         startSending(plugin.options.publication, client);
       }
       unsubscribes.push(_ => client.end());
@@ -203,7 +202,7 @@ module.exports = function(app) {
       var value = message.toString();                                                                                                                           
       if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
       if ((!isNaN(value)) && (!isNaN(parseInt(value)))) value = parseInt(value);                                                                                        
-      app.debug("received topic: %s, message: %s", path, value);                                                                                                
+      app.debug(`received message: '${value}' on topic: '${path}'`);                                                                                                
       delta.addValue(path, value).commit().clear();                                                                                       
     });
   }
@@ -224,12 +223,12 @@ module.exports = function(app) {
         path.meta = (path.meta || publicationoptions.metadDefault);
         path.metatopic = path.topic + "/meta";
 
-        app.debug("publishing topic '%s'", path.topic);
-        if (path.meta) app.debug("publishing topic '%s'", path.metatopic);
+        app.debug(`publishing topic '${path.topic}'`);
+        if (path.meta) app.debug(`publishing topic '${path.metatopic}'`);
 
         unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
-          app.debug("updating topic '%s' with '%s'", path.topic, value);
+          app.debug(`updating topic '${path.topic}' with '${value}'`);
         
           // Publish any selected and available meta data just once the
           // first time a data value is published.
@@ -237,7 +236,7 @@ module.exports = function(app) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
               client.publish(path.metatopic, JSON.stringify(value.meta), { qos: 1, retain: true });
-              app.debug("updating topic '%s' with '%s'", path.metatopic, value);
+              app.debug(`updating topic '${path.metatopic}' with '${value}'`);
               path.meta = false;
             }
           }
