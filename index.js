@@ -26,6 +26,7 @@ const PLUGIN_SCHEMA = {
   "type": "object",
   "properties": {
     "broker": {
+      "title": "Broker configuration",
       "type": "object",
       "properties": {
         "mqttBrokerUrl": {
@@ -33,11 +34,11 @@ const PLUGIN_SCHEMA = {
           "type": "string"
         },
         "mqttClientCredentials": {
-          "title": "MQTT server credentials (as 'username:password')",
+          "title": "MQTT client credentials (as 'username:password')",
           "type": "string"
         },
         "rejectUnauthorised": {
-          "title": "Reject unauthorised",
+          "title": "Reject unauthorised?",
           "type": "boolean"
         }
       },
@@ -52,6 +53,7 @@ const PLUGIN_SCHEMA = {
       }
     },
     "publication": {
+      "title": "Publication settings",
       "type": "object",
       "properties": {
         "root": {

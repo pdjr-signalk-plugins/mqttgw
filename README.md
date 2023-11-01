@@ -12,94 +12,84 @@ and on a per-item basis.
 
 ## Configuration
 
-The plugin recognises the following configuration properties.
+<dl>
+  <dt>Broker configuration <code>broker</code></dt>
+  <dd>
+    Properties which relate to the MQTT peer.
+    <dl>
+      <dt>MQTT broker URL <code>mqttBrokerUrl</code></dt>
+      <dd>
+        Optional string property specifying the network location of the
+        MQTT broker to which connection should be made.
+        Defaults to 'mqtt://127.0.0.1/'.
+      </dd>
+      <dt>MQTT client credentials <code>mqttClientCredentials</code></dt>
+      <dd>
+        Optional string property specifying the username and password
+        which must be presented by a client connecting to the MQTT
+        broker.
+        Defaults to 'username:password'.
+      </dd>
+      <dt>Reject unauthorised? <code>rejectUnauthorised</code></dt>
+      <dd>
+        Optional boolean which says whether or not to reject TLS/SSL
+        connections which fail certificate checks.
+        Defaults to true.
+      </dd>
+    </dl>
+  </dd>
+  <dt>Publication settings <code>publication</code></dt>
+  <dd>
+    Optional properties which relate to the publication of Signal K
+    data on the MQTT broker.
+    <dl>
+      <dt>Prefix to apply to all published topic names <code>root</code></dt>
+      <dd>
+        Optional prefix to apply to all published topic names.
+        Defaults to 'signalk/'.
+      </dd>
+      <dt>Default retain setting for published topic data <code>retainDefault</code></dt>
+      <dd>
+        Optional boolean specifying the default topic retention behaviour.
+        Defaults to true.
+      </dd>
+      <dt>Default minimum interval between topic updates in seconds <code>intervalDefault</code></dt>
+      <dd>
+        Defaults to 60.
+      </dd>
+      <dt>Publish meta data associated with a path <code>metaDefault</code></dt>
+      <dd>
+      </dd>
+      <dt>Signal K self paths which should be published to the remote MQTT server <code></code></dt>
+      <dd>
+        <dl>
+          <dt>Path <code>path</code></dt>
+          <dd>
+            Required string value specifying a Signal K path that
+            references a data value that should be published to the
+            MQTT server.
+          </dd>
+          <dt>Topic name to which path value should be published <code>topic</code></dt>
+          <dd>
+            Optional string value supplying a topic name to which
+            <em>path</em> value will be published.
+            Defaults to '<em>root</em>/<em>path</em>' with periods in
+            <em>path</em> replaced by slashes.
+          </dd>
+          <dt>Retain setting for this item (overrides default) <code>retain</code></dt>
+          <dd>
+          </dd>
+          <dt>Publication interval for this item (overrides default) <code>interval</code></dt>
+          <dd>
+          </dd>
+          <dt>Whether or not to publish meta data for this item (overrides default) <code>meta</code></dt>
+          <dd>
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+  </dd>
 
-<table>
-<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
-<tr>
-<td>
-broker
-</td>
-<td><pre>
-{
-  "url": "mqtt://127.0.0.1",
-  "username": "username",
-  "password": "password"
-}
-</pre></td>
-<td>
-Object supplying connection and authentication details for the MQTT broker. Required.
-</td>
-</tr>
-<tr>
-<td>
-publication
-</td>
-<td><pre>
-{
-  "paths": []
-}
-</pre></td>
-<td>
-Specification of Signal K paths that should be published to the broker. Optional.
-</td>
-</tr>
-<tr>
-<td>
-subscription
-</td>
-<td><pre>
-{
-  "topics": [],
-}
-</pre></td>
-<td>
-Specification of MQTT topics that should be subscribed to by Signal K. Optional.
-</td>
-</table>
-
-Before use <em>broker</em> properties must be set to values which will
-allow the plugin access to your desired MQTT server.
-Of course, you will probably also want to specify some *paths* to
-publish and/or *topics* to subscribe to.
-
-The remainder of this section details each configuration property and
-its purpose.
-
-The <em>broker</em> object has the following properties.
-
-<table>
-<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
-<tr>
-<td>url</td>
-<td><pre>"mqtt://127.0.0.1"</pre></td>
-<td>
-Broker url.
-Required.
-</td>
-</tr>
-<tr>
-<td>username</td>
-<td><pre>"username"</pre></td>
-<td>
-Username for client connection on <em>url</em>.
-Required.
-</td>
-</tr>
-<tr>
-<td>password</td>
-<td><pre>"password"</pre></td>
-<td>
-Password for <em>username</em> on <em>url</em>.
-Required.
-</td>
-</tr>
-<tr>
-<td>rejectUnauthorised</td>
-<td><pre>true</pre></td>
-<td>Optional.</td>
-</tr>
-</table>
 
 The <em>publication</em> object has the following properties.
 
@@ -117,16 +107,13 @@ Required.
 <td>root</td>
 <td><pre>"signalk/"</pre></td>
 <td>
-Prefix to apply to all published topic names.
-Optional.
+
 </td>
 </tr>
 <tr>
 <td>retainDefault</td>
 <td><pre>true</pre></td>
 <td>
-Boolean specifying the default topic retention behaviour.
-Optional.
 </td>
 </tr>
 <tr>
