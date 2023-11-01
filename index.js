@@ -226,9 +226,14 @@ module.exports = function(app) {
         app.debug(`publishing topic '${path.topic}'`);
         if (path.meta) app.debug(`publishing topic '${path.metatopic}'`);
 
-        unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
+        //unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
+        unsubscribes.push(app.streambundle.getSelfBus(path.path)
+        .toProperty()
+        .sample(path.interval * 1000)
+        .skipDuplicates((a,b) => (a.value.id)?(a.value.id === b.value.id):(a.value === b.value))
+        .onValue(value => {
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
-          app.debug(`updating topic '${path.topic}' with '${value}'`);
+          app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
         
           // Publish any selected and available meta data just once the
           // first time a data value is published.
@@ -236,7 +241,7 @@ module.exports = function(app) {
             value = app.getSelfPath(path.path);
             if ((value) && (value.meta)) {
               client.publish(path.metatopic, JSON.stringify(value.meta), { qos: 1, retain: true });
-              app.debug(`updating topic '${path.metatopic}' with '${value}'`);
+              app.debug(`updating topic '${path.metatopic}' with '${JSON.stringify(value.value, null, 2)}'`);
               path.meta = false;
             }
           }
