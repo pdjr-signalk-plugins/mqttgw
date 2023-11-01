@@ -226,7 +226,6 @@ module.exports = function(app) {
         app.debug(`publishing topic '${path.topic}'`);
         if (path.meta) app.debug(`publishing topic '${path.metatopic}'`);
 
-        //unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
         unsubscribes.push(app.streambundle.getSelfBus(path.path)
         .toProperty()                 // examine values not change events
         .sample(path.interval * 1000) // read value at the configured interval
