@@ -228,9 +228,11 @@ module.exports = function(app) {
 
         //unsubscribes.push(app.streambundle.getSelfBus(path.path).throttle(path.interval * 1000).skipDuplicates((a,b) => (a.value == b.value)).onValue(value => {
         unsubscribes.push(app.streambundle.getSelfBus(path.path)
-        .toProperty()
-        .sample(path.interval * 1000)
-        .skipDuplicates((a,b) => (a.value.id)?(a.value.id === b.value.id):(a.value === b.value))
+        .toProperty()                 // examine values not change events
+        .sample(path.interval * 1000) // read value at the configured interval
+        .skipDuplicates((a,b) =>      // detect changes by value id or, if missing, by value
+          (a.value.id)?(a.value.id === b.value.id):(a.value === b.value)
+        )
         .onValue(value => {
           client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
           app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
