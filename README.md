@@ -71,125 +71,41 @@ and on a per-item basis.
           </dd>
           <dt>Topic name to which path value should be published <code>topic</code></dt>
           <dd>
-            Optional string value supplying a topic name to which
-            <em>path</em> value will be published.
-            Defaults to '<em>root</em>/<em>path</em>' with periods in
-            <em>path</em> replaced by slashes.
+            Optional string value supplying a topic name suffix which
+            will be appended to <em>root</em> to generate a topic name
+            to which the value of <em>path</em> will be published.
+            Defaults to <em>path</em> with all periods replaced by
+            slashes.
+            <p>
+            Values published to the generated topic name result from
+            applying JSON.stringify() to the value on Signal K
+            <em>path</em>.</p>
           </dd>
           <dt>Retain setting for this item (overrides default) <code>retain</code></dt>
           <dd>
+            Optional boolean which overrides <em>retainDefault</em> for
+            this item only.
           </dd>
           <dt>Publication interval for this item (overrides default) <code>interval</code></dt>
           <dd>
+            Optional number specifying an interval in seconds which
+            overrides <em>intervalDefault</em> for this item only.
           </dd>
           <dt>Whether or not to publish meta data for this item (overrides default) <code>meta</code></dt>
           <dd>
+            Optional boolean which specifies whether or not to publish
+            metadata associated with <em>path</em>.
+            Overrides <em>metaDefault</em> for this item only.
+            <p>
+            If the publication of <em>path</em>'s metadata associated
+            is requested, then such data is published the the topic
+            '<em>topic</em>/meta'.</p>
           </dd>
         </dl>
       </dd>
     </dl>
   </dd>
-
-
-The <em>publication</em> object has the following properties.
-
-<table>
-<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
-<tr>
-<td>paths</td>
-<td><pre>[]</pre></td>
-<td>
-Array of <em>path</em> objects (see below), each of which specifies a Signal K path that will be published to the MQTT server.
-Required.
-<td>
-</tr>
-<tr>
-<td>root</td>
-<td><pre>"signalk/"</pre></td>
-<td>
-
-</td>
-</tr>
-<tr>
-<td>retainDefault</td>
-<td><pre>true</pre></td>
-<td>
-</td>
-</tr>
-<tr>
-<td>intervalDefault</td>
-<td><pre>5</pre></td>
-<td>
-Integer specifying the default publication interval in seconds.
-Optional.
-</td>
-</tr>
-<tr>
-<td>metaDefault</td>
-<td><pre>false</pre></td>
-<td>
-Boolean specifying whether or not metadata should be published for each published path value.
-Optional.
-</td>
-</tr>
-</table>
-
-Each *path* object has the following properties.
-
-<table>
-<tr><th>Property&nbsp;name</th><th>Default&nbsp;property&nbsp;value</th><th>Description</th></tr>
-<tr>
-<td>path</td>
-<td>(none)</td>
-<td>
-Signal K path to a value that should be published on the MQTT server.
-Required.
-</td>
-</tr>
-<tr>
-<td>topic</td>
-<td>(none)</td>
-<td>
-Topic name to which <em>path</em> should be published.
-Optional.
-</td>
-</tr>
-<tr>
-<td>retain</td>
-<td>(none)</td>
-<td>
-Boolean overriding <em>publication.retainDefault</em>.
-Optional.
-</td>
-</tr>
-<tr>
-<td>interval</td>
-<td>(none)</td>
-<td>
-Boolean overriding <em>publication.intervalDefault</em>.
-Optional.
-</td>
-</tr>
-<tr>
-<td>meta</td>
-<td>(none)</td>
-<td>
-Boolean overriding <em>publication.metaDefault</em>.
-Optional.
-</td>
-</tr>
-</table>
-
-The topic name to which a *path* value is published can be specified
-explicitly by <em>topic</em>, or, if <em>topic</em> is omitted, it will
-be computed by replacing all periods in <em>path</em> with slashes.
-However derived, <em>topic</em> is concatenated to
-<em>publication.root</em> to generate a final MQTT topic name for
-publication.
-Values published to the generated topic name result from applying
-JSON.stringify() to the value on Signal K <em>path</em>.
-If the publication of <em>path</em>'s metadata associated is requested,
-then such data is published on "<em>topic-name</em>/meta".
+  <dt>Subscription settings <code>subscription</code></dt>
 
 The <em>subscription</em> object has the following properties.
 
