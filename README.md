@@ -28,6 +28,8 @@ and on a per-item basis.
         Optional string property specifying the username and password
         which must be presented by a client connecting to the MQTT
         broker.
+        Even though this property is notionally optional, you will surely
+        want to supply your own meaningful values.
         Defaults to 'username:password'.
       </dd>
       <dt>Reject unauthorised? <code>rejectUnauthorised</code></dt>
