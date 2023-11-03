@@ -15,6 +15,7 @@
 */
 
 const mqtt = require('mqtt');
+const _ = require('lodash');
 
 const Delta = require("signalk-libdelta/Delta.js");
 const Log = require("signalk-liblog/Log.js");
@@ -41,15 +42,6 @@ const PLUGIN_SCHEMA = {
           "title": "Reject unauthorised?",
           "type": "boolean"
         }
-      },
-      "required": [
-        "mqttBrokerUrl",
-        "mqttClientCredentials"
-      ],
-      "default": {
-        "mqttBrokerUrl": "mqtt:127.0.0.1",
-        "mqttClientCredentials": "username:password",
-        "rejectUnauthorised": true
       }
     },
     "publication": {
@@ -117,8 +109,14 @@ const PLUGIN_SCHEMA = {
           "items": {
             "type": "object",
             "properties": {
-              "topic": { "title": "Topic", "type": "string" },
-              "path": { "type": "string", "title": "Override the path name automatically generated from topic" }
+              "topic": { 
+                "title": "Topic",
+                "type": "string"
+              },
+              "path": { 
+                "type": "string", 
+                "title": "Override the path name automatically generated from topic"
+              }
             }
           }
         }
@@ -162,10 +160,31 @@ module.exports = function(app) {
   const delta = new Delta(app, plugin.id);
 
   plugin.start = function(options) {
+
     plugin.options = {};
-    plugin.options.broker = { ...plugin.schema.properties.broker.default, ...options.broker };
-    plugin.options.publication = { ...plugin.schema.properties.publication.default, ...options.publication };
-    plugin.options.subscription = { ...plugin.schema.properties.subscription.default, ...options.subscription };
+    _.merge(plugin.options, [ plugin.schema.properties.default, options ]);
+    plugin.options.publication.paths = plugin.options.publication.paths.reduce((a,path) => {
+      if (path.path) {
+        a.push({
+          path: path.path,
+          topic: `${plugin.options.publication.root}${(path.topic)?path.topic:path.path}`.replace('.','/'),
+          retain: (path.retain)?path.retain:plugin.options.publication.retainDefault,
+          interval: (path.interval)?path.interval:plugin.options.publication.intervalDefault,
+          meta: (path.meta)?path.meta:plugin.options.publication.metaDefault
+        });
+      } else log.W("dropping publication with missing 'path' property");
+      return(a);
+    }, {});
+    plugin.options.subscription.topics = plugin.options.subscription.topics.reduce((a,topic) => {
+      if (topic.topic) {
+        a.push({
+          topic: topic.topic,
+          path: `${plugin.options.subscription.root}${(topic.path)?topic.path:topic.topic}`.replace('/','.')
+        })
+      } else log.W("dropping subscription with missing 'topic' property");
+      return(a);
+    }, {});
+
     app.debug(`using configuration: ${JSON.stringify(plugin.options, null, 2)}`)
 
     const client = mqtt.connect(
@@ -217,40 +236,31 @@ module.exports = function(app) {
     var value;
 
     publicationoptions.paths.forEach(path => {
-      if ((path.path) && (path.path != '')) {
+      app.debug(`publishing topic '${path.topic}'`);
+      if (path.meta) app.debug(`publishing topic '${path.topic}/meta'`);
 
-        path.topic = ((publicationoptions.root)?publicationoptions.root:'') + (((path.topic) && (path.topic != ''))?path.topic:(path.path.replace(/\./g, "/")));
-        path.retain = (path.retain || publicationoptions.retainDefault);
-        path.interval = (path.interval || publicationoptions.intervalDefault);
-        path.meta = (path.meta || publicationoptions.metadDefault);
-        path.metatopic = path.topic + "/meta";
-
-        app.debug(`publishing topic '${path.topic}'`);
-        if (path.meta) app.debug(`publishing topic '${path.metatopic}'`);
-
-        unsubscribes.push(app.streambundle.getSelfBus(path.path)
-        .toProperty()                 // examine values not change events
-        .sample(path.interval * 1000) // read value at the configured interval
-        .skipDuplicates((a,b) =>      // detect changes by value id or, if missing, by value
-          (a.value.id)?(a.value.id === b.value.id):(a.value === b.value)
-        )
-        .onValue(value => {
-          client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
-          app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
+      unsubscribes.push(app.streambundle.getSelfBus(path.path)
+      .toProperty()                 // examine values not change events
+      .sample(path.interval * 1000) // read value at the configured interval
+      .skipDuplicates((a,b) =>      // detect changes by value id or, if missing, by value
+        (a.value.id)?(a.value.id === b.value.id):(a.value === b.value)
+      )
+      .onValue(value => {
+        client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
+        app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
         
-          // Publish any selected and available meta data just once the
-          // first time a data value is published.
-          if (path.meta) {
-            value = app.getSelfPath(path.path);
-            if ((value) && (value.meta)) {
-              client.publish(path.metatopic, JSON.stringify(value.meta), { qos: 1, retain: true });
-              app.debug(`updating topic '${path.metatopic}' with '${JSON.stringify(value.value, null, 2)}'`);
-              path.meta = false;
-            }
+        // Publish any selected and available meta data just once the
+        // first time a data value is published.
+        if (path.meta) {
+          value = app.getSelfPath(path.path);
+          if ((value) && (value.meta)) {
+            client.publish(`${path.topic}/meta`, JSON.stringify(value.meta), { qos: 1, retain: true });
+            app.debug(`updating topic '${path.topic}/meta' with '${JSON.stringify(value.value, null, 2)}'`);
+            path.meta = false;
           }
+        }
 
-        }));
-      }
+      }));
     });
   }
 
