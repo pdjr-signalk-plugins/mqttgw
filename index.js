@@ -16,8 +16,8 @@
 
 const mqtt = require('mqtt');
 
-const Delta = require("./lib/signalk-libdelta/Delta.js");
-const Log = require("./lib/signalk-liblog/Log.js");
+const Delta = require("signalk-libdelta/Delta.js");
+const Log = require("signalk-liblog/Log.js");
 
 const PLUGIN_ID = "mqttgw";
 const PLUGIN_NAME = "MQTT gateway";
