@@ -10,7 +10,7 @@
   "dependencies": {
     "mqtt": "^1.14.1",
     "signalk-libdelta": "github:pdjr-signalk/signalk-libdelta",
-    "signalk-liblog": "github:pdjr-signalk/signalk-liblog",
+    "signalk-liblog": "github:pdjr-signalk/signalk-liblog"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\""
