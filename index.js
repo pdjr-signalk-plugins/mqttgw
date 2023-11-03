@@ -163,7 +163,6 @@ module.exports = function(app) {
 
     plugin.options = _.cloneDeep(plugin.schema.properties.default);
     _.merge(plugin.options, options);
-    console.log(JSON.stringify(plugin.options, null, 2));
     plugin.options.publication.paths = plugin.options.publication.paths.reduce((a,path) => {
       if (path.path) {
         a.push({
