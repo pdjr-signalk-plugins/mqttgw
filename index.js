@@ -174,7 +174,7 @@ module.exports = function(app) {
         });
       } else log.W("dropping publication with missing 'path' property");
       return(a);
-    }, {});
+    }, []);
     plugin.options.subscription.topics = plugin.options.subscription.topics.reduce((a,topic) => {
       if (topic.topic) {
         a.push({
@@ -183,7 +183,7 @@ module.exports = function(app) {
         })
       } else log.W("dropping subscription with missing 'topic' property");
       return(a);
-    }, {});
+    }, []);
 
     app.debug(`using configuration: ${JSON.stringify(plugin.options, null, 2)}`)
 
