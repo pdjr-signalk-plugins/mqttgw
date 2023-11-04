@@ -246,10 +246,8 @@ module.exports = function(app) {
         (a.value.id)?(a.value.id === b.value.id):(a.value === b.value)
       )
       .onValue(value => {
-        client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain }, (e) => {
-          console.log(e);
-        });
-        app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
+        app.debug(`>>> updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
+        client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
         
         // Publish any selected and available meta data just once the
         // first time a data value is published.
