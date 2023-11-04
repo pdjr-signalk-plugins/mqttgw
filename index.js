@@ -167,7 +167,7 @@ module.exports = function(app) {
       if (path.path) {
         a.push({
           path: path.path,
-          topic: `${plugin.options.publication.root}${(path.topic)?path.topic:path.path}`.replace('.','/'),
+          topic: `${plugin.options.publication.root}${(path.topic)?path.topic:(path.path.replace('.','/'))}`,
           retain: (path.retain)?path.retain:plugin.options.publication.retainDefault,
           interval: (path.interval)?path.interval:plugin.options.publication.intervalDefault,
           meta: (path.meta)?path.meta:plugin.options.publication.metaDefault
