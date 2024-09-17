@@ -1,5 +1,7 @@
 .DS_Store
+dist
 node_modules
+package-lock.json
 *.tgz
 
 # Static files in the folder created by webpack
