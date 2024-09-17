@@ -222,10 +222,8 @@ module.exports = function(app: any) {
         var value: string | number = message.toString()
         if (!isNaN(parseFloat(value))) {
           value = parseFloat(value)
-        } else {
-          if (!isNaN(parseInt(value))) {
-            value = parseInt(value);
-          }
+        } else if (!isNaN(parseInt(value))) {
+          value = parseInt(value);
         }                                                                                        
         app.debug(`received message: '${value}' on topic: '${path}'`);                                                                                                
         delta.addValue(path, value).commit().clear()                                                                                     
