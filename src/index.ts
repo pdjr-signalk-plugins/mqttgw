@@ -160,7 +160,7 @@ module.exports = function(app: any) {
     start: function(options: any) {
       let delta = new Delta(app, plugin.id);
 
-      plugin.options = _.cloneDeep(plugin.schema.properties.default)
+      plugin.options = _.cloneDeep(plugin.schema.default)
       _.merge(plugin.options, options)
       plugin.options.publication.paths = plugin.options.publication.paths.reduce((a: any, path: any) => {
         if (path.path) {
