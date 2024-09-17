@@ -162,7 +162,7 @@ module.exports = function(app: any) {
 
       plugin.options = _.cloneDeep(plugin.schema.default)
       _.merge(plugin.options, options)
-      plugin.options.publication.paths = plugin.options.publication.paths.reduce((a: any, path: any) => {
+      plugin.options.publication.paths = plugin.options.publication.paths.reduce((a: PublicationPath[], path: PublicationPath) => {
         if (path.path) {
           a.push({
             path: path.path,
@@ -174,7 +174,7 @@ module.exports = function(app: any) {
         } else app.setPluginError("dropping publication with missing 'path' property")
         return(a)
       }, [])
-      plugin.options.subscription.topics = plugin.options.subscription.topics.reduce((a: any, topic: any) => {
+      plugin.options.subscription.topics = plugin.options.subscription.topics.reduce((a: SubscriptionTopic[], topic: SubscriptionTopic) => {
         if (topic.topic) {
           a.push({
             topic: topic.topic,
@@ -205,7 +205,7 @@ module.exports = function(app: any) {
         app.setPluginStatus(`connected to broker ${plugin.options.broker.mqttBrokerUrl}`)
         if ((plugin.options.subscription) && (plugin.options.subscription.topics) && (Array.isArray(plugin.options.subscription.topics)) && (plugin.options.subscription.topics.length > 0)) {
           app.debug(`subscribing to ${plugin.options.subscription.topics.length}`)
-          plugin.options.subscription.topics.forEach((topic: any) => {
+          plugin.options.subscription.topics.forEach((topic: SubscriptionTopic) => {
             app.debug(`subscribing to topic '${topic.topic}'`)
             client.subscribe(topic.topic)
           })
@@ -228,45 +228,42 @@ module.exports = function(app: any) {
           }
         }                                                                                        
         app.debug(`received message: '${value}' on topic: '${path}'`);                                                                                                
-        delta.addValue(path, value).commit().clear();                                                                                       
+        delta.addValue(path, value).commit().clear()                                                                                     
       })
 
       function startSending(publicationoptions: any, client: any) {
-        var value;
+        var value
     
-        publicationoptions.paths.forEach((path: any) => {
-          app.debug(`publishing topic '${path.topic}'`);
-          if (path.meta) app.debug(`publishing topic '${path.topic}/meta'`);
+        publicationoptions.paths.forEach((path: PublicationPath) => {
+          app.debug(`publishing topic '${path.topic}'`)
+          if (path.meta) app.debug(`publishing topic '${path.topic}/meta'`)
     
           unsubscribes.push(app.streambundle.getSelfBus(path.path)
-          .toProperty()                 // examine values not change events
-          .sample(path.interval * 1000) // read value at the configured interval
-          .skipDuplicates((a: any, b: any) =>      // detect changes by value id or, if missing, by value
-            (a.value.id)?(a.value.id === b.value.id):(a.value === b.value)
-          )
-          .onValue((value: any) => {
-            app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
-            client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
+            .toProperty()                 // examine values not change events
+            .sample((path.interval || 5) * 1000) // read value at the configured interval
+            .skipDuplicates((a: any, b: any) => (a.value.id)?(a.value.id === b.value.id):(a.value === b.value))
+            .onValue((value: any) => {
+              app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`)
+              client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain })
             
-            // Publish any selected and available meta data just once the
-            // first time a data value is published.
-            if (path.meta) {
-              value = app.getSelfPath(path.path);
-              if ((value) && (value.meta)) {
-                client.publish(`${path.topic}/meta`, JSON.stringify(value.meta), { qos: 1, retain: true });
-                app.debug(`updating topic '${path.topic}/meta' with '${JSON.stringify(value.value, null, 2)}'`);
-                path.meta = false;
+              // Publish any selected and available meta data just once the
+              // first time a data value is published.
+              if (path.meta) {
+                value = app.getSelfPath(path.path)
+                if ((value) && (value.meta)) {
+                  client.publish(`${path.topic}/meta`, JSON.stringify(value.meta), { qos: 1, retain: true })
+                  app.debug(`updating topic '${path.topic}/meta' with '${JSON.stringify(value.value, null, 2)}'`)
+                  path.meta = false
+                }
               }
-            }
-    
-          }))
+           }))
         })
       }
     
     },
 
     stop: function() {
-      unsubscribes.forEach(f => f());
+      unsubscribes.forEach(f => f())
     }
   }
 
@@ -284,4 +281,17 @@ interface SKPlugin {
   stop: () => void,
 
   options: any
+}
+
+interface PublicationPath {
+  path: string,
+  topic: string | undefined,
+  retain?: boolean,
+  interval?: number,
+  meta?: boolean
+}
+
+interface SubscriptionTopic {
+  topic: string,
+  path: string | undefined
 }
