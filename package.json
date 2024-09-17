@@ -5,13 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "signalk-plugin-enabled-by-default": true,
-  "directories": {
-  },
-  "dependencies": {
-    "mqtt": "^1.14.1",
-    "signalk-libdelta": "github:pdjr-signalk/signalk-libdelta",
-    "signalk-liblog": "github:pdjr-signalk/signalk-liblog"
-  },
+  "directories": {},
   "scripts": {
     "publish": "yq -o=json -I=2 resources/openApi.yaml > resources/openApi.json",
     "test": "echo \"Error: no test specified\"",
@@ -32,5 +26,14 @@
   "bugs": {
     "url": "https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw/issues"
   },
-  "homepage": "https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw#readme"
+  "homepage": "https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw#readme",
+  "dependencies": {
+    "mqtt": "^5.10.1",
+    "signalk-libdelta": "github:pdjr-signalk/signalk-libdelta#typescript"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.7",
+    "@types/node": "^22.5.5",
+    "typescript": "^5.6.2"
+  }
 }

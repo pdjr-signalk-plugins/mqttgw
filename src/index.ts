@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-import mqtt from 'mqtt'
+import { connect, MqttClient } from 'mqtt'
 import * as _ from 'lodash'
 
 import { Delta } from 'signalk-libdelta'
@@ -147,7 +147,6 @@ const BROKER_RECONNECT_PERIOD = 60000;
 
 module.exports = function(app: any) {
   let unsubscribes: (() => void)[] = []
-  let delta = new Delta(app, plugin.id);
 
   const plugin: SKPlugin = {
 
@@ -159,10 +158,11 @@ module.exports = function(app: any) {
     options: {},
 
     start: function(options: any) {
+      let delta = new Delta(app, plugin.id);
 
       plugin.options = _.cloneDeep(plugin.schema.properties.default)
       _.merge(plugin.options, options)
-      plugin.options.publication.paths = plugin.options.publication.paths.reduce((a, path) => {
+      plugin.options.publication.paths = plugin.options.publication.paths.reduce((a: any, path: any) => {
         if (path.path) {
           a.push({
             path: path.path,
@@ -174,19 +174,19 @@ module.exports = function(app: any) {
         } else app.setPluginError("dropping publication with missing 'path' property")
         return(a)
       }, [])
-      plugin.options.subscription.topics = plugin.options.subscription.topics.reduce((a,topic) => {
+      plugin.options.subscription.topics = plugin.options.subscription.topics.reduce((a: any, topic: any) => {
         if (topic.topic) {
           a.push({
             topic: topic.topic,
             path: `${plugin.options.subscription.root}${(topic.path)?topic.path:topic.topic}`.replace('/','.')
           })
-        } else log.W("dropping subscription with missing 'topic' property")
+        } else app.setPluginError("dropping subscription with missing 'topic' property")
         return(a)
       }, [])
 
       app.debug(`using configuration: ${JSON.stringify(plugin.options, null, 2)}`)
 
-      const client = mqtt.connect(
+      const client: MqttClient = connect(
         plugin.options.broker.mqttBrokerUrl,
         {
           rejectUnauthorized: plugin.options.broker.rejectUnauthorised,
@@ -195,51 +195,56 @@ module.exports = function(app: any) {
           username: plugin.options.broker.mqttClientCredentials.split(':')[0].trim(),
           password: plugin.options.broker.mqttClientCredentials.split(':')[1].trim()
         }
-      );
+      )
         
       client.on('error', (err) => {
-        log.E(`MQTT broker connection error (${err})`, false);
+        app.setPluginError(`MQTT broker connection error (${err})`)
       });
         
       client.on('connect', () => {
-        log.N(`connected to broker ${plugin.options.broker.mqttBrokerUrl}`);
+        app.setPluginStatus(`connected to broker ${plugin.options.broker.mqttBrokerUrl}`)
         if ((plugin.options.subscription) && (plugin.options.subscription.topics) && (Array.isArray(plugin.options.subscription.topics)) && (plugin.options.subscription.topics.length > 0)) {
-          app.debug(`subscribing to ${plugin.options.subscription.topics.length}`);
-          plugin.options.subscription.topics.forEach(topic => {
-            app.debug(`subscribing to topic '${topic.topic}'`);
-            client.subscribe(topic.topic);
-          });
+          app.debug(`subscribing to ${plugin.options.subscription.topics.length}`)
+          plugin.options.subscription.topics.forEach((topic: any) => {
+            app.debug(`subscribing to topic '${topic.topic}'`)
+            client.subscribe(topic.topic)
+          })
         }
         if ((plugin.options.publication) && (plugin.options.publication.paths) && (Array.isArray(plugin.options.publication.paths)) && (plugin.options.publication.paths.length > 0)) {
-          app.debug(`publishing ${plugin.options.publication.paths.length} paths`);
-          startSending(plugin.options.publication, client);
+          app.debug(`publishing ${plugin.options.publication.paths.length} paths`)
+          startSending(plugin.options.publication, client)
         }
-        unsubscribes.push(_ => client.end());
+        unsubscribes.push(() => client.end())
       })
         
       client.on('message', function(topic, message) {
-        var path = plugin.options.subscription.topics.reduce((a,t) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (plugin.options.subscription.root + topic.replace(/\//g, "."))); 
-        var value = message.toString();                                                                                                                           
-        if ((!isNaN(value)) && (!isNaN(parseFloat(value)))) value = parseFloat(value);                                                                                        
-        if ((!isNaN(value)) && (!isNaN(parseInt(value)))) value = parseInt(value);                                                                                        
+        var path = plugin.options.subscription.topics.reduce((a: any, t: any) => { return(((topic == t.topic) && (t.path))?t.path:a) }, (plugin.options.subscription.root + topic.replace(/\//g, ".")))
+        var value: string | number = message.toString()
+        if (!isNaN(parseFloat(value))) {
+          value = parseFloat(value)
+        } else {
+          if (!isNaN(parseInt(value))) {
+            value = parseInt(value);
+          }
+        }                                                                                        
         app.debug(`received message: '${value}' on topic: '${path}'`);                                                                                                
         delta.addValue(path, value).commit().clear();                                                                                       
       })
 
-      function startSending(publicationoptions, client) {
+      function startSending(publicationoptions: any, client: any) {
         var value;
     
-        publicationoptions.paths.forEach(path => {
+        publicationoptions.paths.forEach((path: any) => {
           app.debug(`publishing topic '${path.topic}'`);
           if (path.meta) app.debug(`publishing topic '${path.topic}/meta'`);
     
           unsubscribes.push(app.streambundle.getSelfBus(path.path)
           .toProperty()                 // examine values not change events
           .sample(path.interval * 1000) // read value at the configured interval
-          .skipDuplicates((a,b) =>      // detect changes by value id or, if missing, by value
+          .skipDuplicates((a: any, b: any) =>      // detect changes by value id or, if missing, by value
             (a.value.id)?(a.value.id === b.value.id):(a.value === b.value)
           )
-          .onValue(value => {
+          .onValue((value: any) => {
             app.debug(`updating topic '${path.topic}' with '${JSON.stringify(value.value, null, 2)}'`);
             client.publish(path.topic, JSON.stringify(value.value), { qos: 1, retain: path.retain });
             
@@ -254,8 +259,8 @@ module.exports = function(app: any) {
               }
             }
     
-          }));
-        });
+          }))
+        })
       }
     
     },
@@ -264,7 +269,8 @@ module.exports = function(app: any) {
       unsubscribes.forEach(f => f());
     }
   }
-  return plugin;
+
+  return plugin
 }
 
 interface SKPlugin {
