@@ -120,24 +120,24 @@ const PLUGIN_SCHEMA: object = {
           }
         }
       }
+    }
+  },
+  "default": {
+    "broker": {
+      "mqttBrokerUrl": "mqtt:127.0.0.1",
+      "mqttClientCredentials": "username:password",
+      "rejectUnauthorised": true
     },
-    "default": {
-      "broker": {
-        "mqttBrokerUrl": "mqtt:127.0.0.1",
-        "mqttClientCredentials": "username:password",
-        "rejectUnauthorised": true
-      },
-      "publication": {
-        "root": "signalk/",
-        "retainDefault": true,
-        "intervalDefault": 60,
-        "metaDefault": false,
-        "paths": []
-      },
-      "subscription": {
-        "root": "mqtt.",
-        "topics": []
-      }
+    "publication": {
+      "root": "signalk/",
+      "retainDefault": true,
+      "intervalDefault": 60,
+      "metaDefault": false,
+      "paths": []
+    },
+    "subscription": {
+      "root": "mqtt.",
+      "topics": []
     }
   }
 };
