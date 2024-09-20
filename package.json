@@ -29,7 +29,7 @@
   "homepage": "https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw#readme",
   "dependencies": {
     "mqtt": "^5.10.1",
-    "signalk-libdelta": "github:pdjr-signalk/signalk-libdelta#typescript"
+    "signalk-libdelta": "github:pdjr-signalk/signalk-libdelta"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.7",
