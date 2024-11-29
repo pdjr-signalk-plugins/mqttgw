@@ -13,14 +13,10 @@ and on a per-item basis.
 ## Configuration
 
 <dl>
-  <dt>Broker configuration <code>broker</code></dt>
+  <dt>Broker URL <code>brokerUrl</code></dt>
   <dd>
-    Properties which relate to the MQTT peer.
-    <dl>
-      <dt>MQTT broker URL <code>mqttBrokerUrl</code></dt>
-      <dd>
-        Optional string property specifying the network location of the
-        MQTT broker to which connection should be made.
+    Required string property specifying the network location of the
+    MQTT broker to which connection should be made.
         Defaults to 'mqtt://127.0.0.1/'.
       </dd>
       <dt>MQTT client credentials <code>mqttClientCredentials</code></dt>

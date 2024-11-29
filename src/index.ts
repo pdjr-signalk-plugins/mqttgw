@@ -19,6 +19,7 @@ import * as _ from 'lodash'
 import { Delta } from 'signalk-libdelta'
 import path = require('path');
 
+const BROKER_URL_DEFAULT: string = 'mqtt://127.0.0.1/'
 const BROKER_REJECT_UNAUTHORISED_DEFAULT: boolean = false;
 
 const PUBLICATION_ROOT_DEFAULT: string = 'signalk/';
@@ -169,9 +170,9 @@ module.exports = function(app: any) {
 
   function makePluginConfiguration(options: any): PluginConfiguration {
     app.debug(`makePluginConfiguration(${JSON.stringify(options)})`);
-    if (!options.brokerUrl) throw('missing \'brokerUrl\' property');
+
     var pluginConfiguration: PluginConfiguration = {
-      brokerUrl: options.brokerUrl,
+      brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
       brokerCredentials: (options.brokerCredentials || undefined),
       publicationPaths: [],
       subscriptionTopics: [],

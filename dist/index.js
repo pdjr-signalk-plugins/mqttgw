@@ -17,6 +17,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mqtt_1 = require("mqtt");
 const signalk_libdelta_1 = require("signalk-libdelta");
+const BROKER_URL_DEFAULT = 'mqtt://127.0.0.1/';
 const BROKER_REJECT_UNAUTHORISED_DEFAULT = false;
 const PUBLICATION_ROOT_DEFAULT = 'signalk/';
 const PUBLICATION_INTERVAL_DEFAULT = 5;
@@ -156,10 +157,8 @@ module.exports = function (app) {
     };
     function makePluginConfiguration(options) {
         app.debug(`makePluginConfiguration(${JSON.stringify(options)})`);
-        if (!options.brokerUrl)
-            throw ('missing \'brokerUrl\' property');
         var pluginConfiguration = {
-            brokerUrl: options.brokerUrl,
+            brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
             brokerCredentials: (options.brokerCredentials || undefined),
             publicationPaths: [],
             subscriptionTopics: [],
