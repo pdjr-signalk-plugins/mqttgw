@@ -38,10 +38,6 @@ const PLUGIN_SCHEMA = {
             "title": "MQTT client credentials (as 'username:password')",
             "type": "string"
         },
-        "rejectUnauthorised": {
-            "title": "Reject unauthorised?",
-            "type": "boolean"
-        },
         "publication": {
             "title": "Publication settings",
             "type": "object",
@@ -50,13 +46,13 @@ const PLUGIN_SCHEMA = {
                     "title": "Prefix to apply to all published topic names",
                     "type": "string"
                 },
-                "retain": {
-                    "title": "Default retain setting for published topic data",
-                    "type": "boolean"
-                },
                 "interval": {
                     "title": "Default minimum interval between topic updates in seconds",
                     "type": "number"
+                },
+                "retain": {
+                    "title": "Default retain setting for published topic data",
+                    "type": "boolean"
                 },
                 "meta": {
                     "title": "Publish any available meta data associated with a path",
@@ -76,13 +72,13 @@ const PLUGIN_SCHEMA = {
                                 "type": "string",
                                 "title": "Override the topic name automatically generated from path"
                             },
-                            "retain": {
-                                "type": "boolean",
-                                "title": "Override the default publication retain setting for this item"
-                            },
                             "interval": {
                                 "type": "number",
                                 "title": "Override the default interval between publication events for this item"
+                            },
+                            "retain": {
+                                "type": "boolean",
+                                "title": "Override the default publication retain setting for this item"
                             },
                             "meta": {
                                 "type": "boolean",
