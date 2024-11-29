@@ -34,23 +34,17 @@ const PLUGIN_DESCRIPTION = 'Exchange data with an MQTT server'
 const PLUGIN_SCHEMA: object = {
   "type": "object",
   "properties": {
-    "broker": {
-      "title": "Broker configuration",
-      "type": "object",
-      "properties": {
-        "mqttBrokerUrl": {
-          "title": "MQTT broker url (eg: mqtt://192.168.1.203)",
-          "type": "string"
-        },
-        "mqttClientCredentials": {
-          "title": "MQTT client credentials (as 'username:password')",
-          "type": "string"
-        },
-        "rejectUnauthorised": {
-          "title": "Reject unauthorised?",
-          "type": "boolean"
-        }
-      }
+    "brokerUrl": {
+      "title": "MQTT broker url (eg: mqtt://192.168.1.203)",
+      "type": "string"
+    },
+    "brokerCredentials": {
+      "title": "MQTT client credentials (as 'username:password')",
+      "type": "string"
+    },
+    "rejectUnauthorised": {
+      "title": "Reject unauthorised?",
+      "type": "boolean"
     },
     "publication": {
       "title": "Publication settings",
@@ -60,15 +54,15 @@ const PLUGIN_SCHEMA: object = {
           "title": "Prefix to apply to all published topic names",
           "type": "string"
 	      },
-        "retainDefault": {
+        "retain": {
           "title": "Default retain setting for published topic data",
           "type": "boolean"
         },
-        "intervalDefault": {
+        "interval": {
           "title": "Default minimum interval between topic updates in seconds",
           "type": "number"
         },
-        "metaDefault": {
+        "meta": {
           "title": "Publish any available meta data associated with a path",
           "type": "boolean",
         },
@@ -130,24 +124,6 @@ const PLUGIN_SCHEMA: object = {
         }
       }
     }
-  },
-  "default": {
-    "broker": {
-      "mqttBrokerUrl": "mqtt:127.0.0.1",
-      "mqttClientCredentials": "username:password",
-      "rejectUnauthorised": true
-    },
-    "publication": {
-      "root": "signalk/",
-      "retainDefault": true,
-      "intervalDefault": 60,
-      "metaDefault": false,
-      "paths": []
-    },
-    "subscription": {
-      "root": "mqtt.",
-      "topics": []
-    }
   }
 };
 const PLUGIN_UISCHEMA: object = {};
@@ -207,9 +183,9 @@ module.exports = function(app: any) {
         var publicationPath: PublicationPath = {
           path: pathOption.path,
           topic: `${options.publication.root || PUBLICATION_ROOT_DEFAULT}${(pathOption.topic)?pathOption.topic:(pathOption.path.replaceAll('.','/'))}`,
-          interval: (pathOption.interval || PUBLICATION_INTERVAL_DEFAULT) * 1000,
-          retain: pathOption.retain || PUBLICATION_RETAIN_DEFAULT,
-          meta: pathOption.meta || PUBLICATION_META_DEFAULT
+          interval: (pathOption.interval || options.interval || PUBLICATION_INTERVAL_DEFAULT) * 1000,
+          retain: pathOption.retain || options.retain || PUBLICATION_RETAIN_DEFAULT,
+          meta: pathOption.meta || options.meta || PUBLICATION_META_DEFAULT
         };
         pluginConfiguration.publicationPaths.push(publicationPath);
       });
