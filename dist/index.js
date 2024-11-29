@@ -167,7 +167,6 @@ module.exports = function (app) {
      * @returns derived PluginConfiguration object
      */
     function makePluginConfiguration(options) {
-        app.debug(`makePluginConfiguration(${JSON.stringify(options)})...`);
         var pluginConfiguration = {
             brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
             brokerCredentials: (options.brokerCredentials || undefined),
@@ -207,7 +206,6 @@ module.exports = function (app) {
      * @returns MqttClient handle
      */
     function operateBrokerInterface(pluginConfiguration) {
-        app.debug(`operateBrokerInterface(${JSON.stringify(pluginConfiguration)})...`);
         var delta = new signalk_libdelta_1.Delta(app, plugin.id);
         var mqttClient = (0, mqtt_1.connect)(pluginConfiguration.brokerUrl, {
             reconnectPeriod: (BROKER_RECONNECT_PERIOD * 1000),
