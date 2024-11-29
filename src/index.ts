@@ -169,7 +169,7 @@ module.exports = function(app: any) {
   }
 
   function makePluginConfiguration(options: any): PluginConfiguration {
-    app.debug(`makePluginConfiguration(${JSON.stringify(options)})`);
+    app.debug(`makePluginConfiguration(${JSON.stringify(options)})...`);
 
     var pluginConfiguration: PluginConfiguration = {
       brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
@@ -205,6 +205,7 @@ module.exports = function(app: any) {
   }
 
   function operateBrokerInterface(pluginConfiguration: PluginConfiguration) : MqttClient {
+    app.debug(`operateBrokerInterface(${JSON.stringify(pluginConfiguration)})...`);
     var delta = new Delta(app, plugin.id);
 
     var mqttClient: MqttClient = connect(

@@ -156,7 +156,7 @@ module.exports = function (app) {
         }
     };
     function makePluginConfiguration(options) {
-        app.debug(`makePluginConfiguration(${JSON.stringify(options)})`);
+        app.debug(`makePluginConfiguration(${JSON.stringify(options)})...`);
         var pluginConfiguration = {
             brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
             brokerCredentials: (options.brokerCredentials || undefined),
@@ -192,6 +192,7 @@ module.exports = function (app) {
         return (pluginConfiguration);
     }
     function operateBrokerInterface(pluginConfiguration) {
+        app.debug(`operateBrokerInterface(${JSON.stringify(pluginConfiguration)})...`);
         var delta = new signalk_libdelta_1.Delta(app, plugin.id);
         var mqttClient = (0, mqtt_1.connect)(pluginConfiguration.brokerUrl, {
             rejectUnauthorized: pluginConfiguration.rejectUnauthorised,
