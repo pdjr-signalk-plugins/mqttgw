@@ -15,31 +15,37 @@ and on a per-item basis.
 <dl>
   <dt>Broker URL <code>brokerUrl</code></dt>
   <dd>
-    Required string property specifying the network location of the
+    <p>
+    Optional string property specifying the network location of the
     MQTT broker to which connection should be made.
-        Defaults to 'mqtt://127.0.0.1/'.
-      </dd>
-      <dt>MQTT client credentials <code>mqttClientCredentials</code></dt>
-      <dd>
-        Optional string property specifying the username and password
-        which must be presented by a client connecting to the MQTT
-        broker.
-        Even though this property is notionally optional, you will surely
-        want to supply your own meaningful values.
-        Defaults to 'username:password'.
-      </dd>
-      <dt>Reject unauthorised? <code>rejectUnauthorised</code></dt>
-      <dd>
-        Optional boolean which says whether or not to reject TLS/SSL
-        connections which fail certificate checks.
-        Defaults to true.
-      </dd>
-    </dl>
+    </p><p>
+    Defaults to 'mqtt://127.0.0.1/'.
+    </p>
+  </dd>
+  <dt>Broker credentials <code>brokerCredentials</code></dt>
+  <dd>
+    <p>
+    Optional string property specifying the username and password
+    which must be presented when connecting to the MQTT broker.
+    </p><p>
+    Defaults to 'username:password'.
+    </p>
+  </dd>
+  <dt>Reject unauthorised? <code>rejectUnauthorised</code></dt>
+  <dd>
+    <p>
+    Optional boolean which says whether or not to reject TLS/SSL
+    connections which fail certificate checks.
+    </p><p>
+    Defaults to true.
+    </p>
   </dd>
   <dt>Publication settings <code>publication</code></dt>
   <dd>
+    <p>
     Optional properties which relate to the publication of Signal K
     data on the MQTT broker.
+    </p>
     <dl>
       <dt>Prefix to apply to all published topic names <code>root</code></dt>
       <dd>
