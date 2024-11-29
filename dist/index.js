@@ -201,6 +201,9 @@ module.exports = function (app) {
         return (pluginConfiguration);
     }
     /**
+     * Open an MQTT client connection to the specified broker, register
+     * subscriptions and initiate publications. Bassically, everything
+     * happens here.
      *
      * @param pluginConfiguration fully qualified PluginConfiguration
      * @returns MqttClient handle
@@ -246,6 +249,12 @@ module.exports = function (app) {
         });
         return (mqttClient);
     }
+    /**
+     * Send updates on published paths to the MQTT broker/
+     *
+     * @param publicationPaths paths to be published
+     * @param client the MQTT broker to publish to
+     */
     function sendPathUpdatesToMqtt(publicationPaths, client) {
         var value;
         publicationPaths.forEach((path) => {
