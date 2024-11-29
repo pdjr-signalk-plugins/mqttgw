@@ -146,7 +146,7 @@ module.exports = function(app: any) {
         pluginConfiguration = makePluginConfiguration(options);
         app.debug(`using configuration: ${JSON.stringify(pluginConfiguration, null, 2)}`);
         if ((pluginConfiguration.publicationPaths.length > 0) || (pluginConfiguration.subscriptionTopics.length > 0)) {
-          app.setPluginStatus(`Started: publishing ${pluginConfiguration.publicationPaths.length} paths; receiving ${pluginConfiguration.subscriptionTopics.length} topics`);
+          app.setPluginStatus(`Started: using broker at ${pluginConfiguration.brokerUrl} (publishing ${pluginConfiguration.publicationPaths.length} paths; receiving ${pluginConfiguration.subscriptionTopics.length} topics)`);
 
           mqttClient = operateBrokerInterface(pluginConfiguration);
         } else {
