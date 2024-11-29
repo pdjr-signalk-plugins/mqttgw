@@ -220,7 +220,7 @@ module.exports = function (app) {
         });
         mqttClient.on('connect', () => {
             if ((pluginConfiguration.subscriptionTopics) && (pluginConfiguration.subscriptionTopics.length > 0)) {
-                app.debug(`subscribing to ${pluginConfiguration.subscriptionTopics.length}`);
+                app.debug(`subscribing to ${pluginConfiguration.subscriptionTopics.length} topics`);
                 pluginConfiguration.subscriptionTopics.forEach((topic) => {
                     app.debug(`subscribing to topic '${topic.topic}'`);
                     mqttClient.subscribe(topic.topic);
