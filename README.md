@@ -5,7 +5,8 @@ Exchange data between MQTT and Signal K.
 ## Description
 
 **pdjr-skplugin-mqttgw** exports data to and imports data from an
-MQTT server.
+MQTT server using the mqtt: protocol.
+SSL/TLS connection is not supported.
 
 Export frequency, scope and retention behaviour can be set globally
 and on a per-item basis.
@@ -31,15 +32,6 @@ and on a per-item basis.
     Defaults to 'username:password'.
     </p>
   </dd>
-  <dt>Reject unauthorised? <code>rejectUnauthorised</code></dt>
-  <dd>
-    <p>
-    Optional boolean which says whether or not to reject TLS/SSL
-    connections which fail certificate checks.
-    </p><p>
-    Defaults to true.
-    </p>
-  </dd>
   <dt>Publication settings <code>publication</code></dt>
   <dd>
     <p>
@@ -49,19 +41,28 @@ and on a per-item basis.
     <dl>
       <dt>Prefix to apply to all published topic names <code>root</code></dt>
       <dd>
+        <p>
         Optional prefix to apply to all published topic names.
+        </p><p>
         Defaults to 'signalk/'.
+        </p>
       </dd>
-      <dt>Default retain setting for published topic data <code>retainDefault</code></dt>
+      <dt>Default retain setting for published topic data <code>retain</code></dt>
       <dd>
+        <p>
         Optional boolean specifying the default topic retention behaviour.
+        Can be overriden in individual publication path.
+        </p><p>
         Defaults to true.
+        </p>
       </dd>
-      <dt>Default minimum interval between topic updates in seconds <code>intervalDefault</code></dt>
+      <dt>Default minimum interval between topic updates in seconds <code>interval</code></dt>
       <dd>
-        Defaults to 60.
+        <p>
+        Defaults to 5.
+        </p>
       </dd>
-      <dt>Publish meta data associated with a path <code>metaDefault</code></dt>
+      <dt>Publish meta data associated with a path <code>meta</code></dt>
       <dd>
       </dd>
       <dt>Signal K self paths which should be published to the remote MQTT server <code></code></dt>

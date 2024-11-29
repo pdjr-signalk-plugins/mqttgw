@@ -20,14 +20,12 @@ import { Delta } from 'signalk-libdelta'
 import path = require('path');
 
 const BROKER_URL_DEFAULT: string = 'mqtt://127.0.0.1/'
-const BROKER_REJECT_UNAUTHORISED_DEFAULT: boolean = false;
-
 const PUBLICATION_ROOT_DEFAULT: string = 'signalk/';
 const PUBLICATION_INTERVAL_DEFAULT: number = 5;
 const PUBLICATION_RETAIN_DEFAULT: boolean = true;
 const PUBLICATION_META_DEFAULT: boolean = false;
-
 const SUBSCRIPTION_ROOT_DEFAULT: string = 'mqtt.';
+const BROKER_RECONNECT_PERIOD = 10;
 
 const PLUGIN_ID: string = 'mqttgw';
 const PLUGIN_NAME: string = 'pdjr-skplugin-mqttgw'
@@ -129,7 +127,6 @@ const PLUGIN_SCHEMA: object = {
 };
 const PLUGIN_UISCHEMA: object = {};
 
-const BROKER_RECONNECT_PERIOD = 60000;
 
 module.exports = function(app: any) {
   var unsubscribes: (() => void)[] = []
@@ -153,21 +150,30 @@ module.exports = function(app: any) {
 
           mqttClient = operateBrokerInterface(pluginConfiguration);
         } else {
-          app.setPluginStatus('Stopped: no configured publications or subscriptions');
+          app.setPluginStatus('Stopped: no configured publication paths or subscription topics');
         }
       } catch(e: any) {
         app.setPluginStatus('Stopped: bad or missing configuration');
         app.setPluginError(e.message);
-      }
-
-    
+      } 
     },
 
     stop: function() {
+      if (mqttClient) mqttClient.end();
       unsubscribes.forEach(f => f())
     }
   }
 
+  /**
+   * Parse the contents of the plugin configuration file into a fully
+   * qualified PluginConfiguration object by interpolating user and
+   * system defaults.
+   * 
+   * Validation errors throw an exception.
+   * 
+   * @param options plugin configuration options
+   * @returns derived PluginConfiguration object
+   */
   function makePluginConfiguration(options: any): PluginConfiguration {
     app.debug(`makePluginConfiguration(${JSON.stringify(options)})...`);
 
@@ -175,8 +181,7 @@ module.exports = function(app: any) {
       brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
       brokerCredentials: (options.brokerCredentials || undefined),
       publicationPaths: [],
-      subscriptionTopics: [],
-      rejectUnauthorised: options.rejectUnauthorised || BROKER_REJECT_UNAUTHORISED_DEFAULT
+      subscriptionTopics: []
     }
     if ((options.publication) && (options.publication.paths)) {
       options.publication.paths.forEach((pathOption: any) => {
@@ -193,7 +198,7 @@ module.exports = function(app: any) {
     }
     if ((options.subscription) && (options.subscription.topics)) {
       options.subscription.topics.forEach((topicOption: any) => {
-        if (!topicOption.topic) throw('missing sibscription \'topic\' property');
+        if (!topicOption.topic) throw('missing subscription \'topic\' property');
         var subscriptionTopic: SubscriptionTopic = {
           topic: topicOption.topic,
           path: `${options.subscription.root || SUBSCRIPTION_ROOT_DEFAULT}${(topicOption.path)?topicOption.path:topicOption.topic}`.replace('/','.')
@@ -204,6 +209,11 @@ module.exports = function(app: any) {
     return(pluginConfiguration);
   }
 
+  /**
+   * 
+   * @param pluginConfiguration fully qualified PluginConfiguration
+   * @returns MqttClient handle
+   */
   function operateBrokerInterface(pluginConfiguration: PluginConfiguration) : MqttClient {
     app.debug(`operateBrokerInterface(${JSON.stringify(pluginConfiguration)})...`);
     var delta = new Delta(app, plugin.id);
@@ -211,8 +221,7 @@ module.exports = function(app: any) {
     var mqttClient: MqttClient = connect(
       pluginConfiguration.brokerUrl,
       {
-        rejectUnauthorized: pluginConfiguration.rejectUnauthorised,
-        reconnectPeriod: BROKER_RECONNECT_PERIOD,
+        reconnectPeriod: (BROKER_RECONNECT_PERIOD * 1000),
         clientId: app.selfId,
         username: pluginConfiguration.brokerCredentials.split(':')[0].trim(),
         password: pluginConfiguration.brokerCredentials.split(':')[1].trim()
@@ -314,7 +323,6 @@ interface PluginConfiguration {
   brokerUrl: string,
   brokerCredentials: string,
   publicationPaths: PublicationPath[],
-  subscriptionTopics: SubscriptionTopic[],
-  rejectUnauthorised: boolean
+  subscriptionTopics: SubscriptionTopic[]
 }
 

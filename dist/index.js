@@ -18,12 +18,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mqtt_1 = require("mqtt");
 const signalk_libdelta_1 = require("signalk-libdelta");
 const BROKER_URL_DEFAULT = 'mqtt://127.0.0.1/';
-const BROKER_REJECT_UNAUTHORISED_DEFAULT = false;
 const PUBLICATION_ROOT_DEFAULT = 'signalk/';
 const PUBLICATION_INTERVAL_DEFAULT = 5;
 const PUBLICATION_RETAIN_DEFAULT = true;
 const PUBLICATION_META_DEFAULT = false;
 const SUBSCRIPTION_ROOT_DEFAULT = 'mqtt.';
+const BROKER_RECONNECT_PERIOD = 10;
 const PLUGIN_ID = 'mqttgw';
 const PLUGIN_NAME = 'pdjr-skplugin-mqttgw';
 const PLUGIN_DESCRIPTION = 'Exchange data with an MQTT server';
@@ -123,7 +123,6 @@ const PLUGIN_SCHEMA = {
     }
 };
 const PLUGIN_UISCHEMA = {};
-const BROKER_RECONNECT_PERIOD = 60000;
 module.exports = function (app) {
     var unsubscribes = [];
     var pluginConfiguration = {};
@@ -143,7 +142,7 @@ module.exports = function (app) {
                     mqttClient = operateBrokerInterface(pluginConfiguration);
                 }
                 else {
-                    app.setPluginStatus('Stopped: no configured publications or subscriptions');
+                    app.setPluginStatus('Stopped: no configured publication paths or subscription topics');
                 }
             }
             catch (e) {
@@ -152,17 +151,28 @@ module.exports = function (app) {
             }
         },
         stop: function () {
+            if (mqttClient)
+                mqttClient.end();
             unsubscribes.forEach(f => f());
         }
     };
+    /**
+     * Parse the contents of the plugin configuration file into a fully
+     * qualified PluginConfiguration object by interpolating user and
+     * system defaults.
+     *
+     * Validation errors throw an exception.
+     *
+     * @param options plugin configuration options
+     * @returns derived PluginConfiguration object
+     */
     function makePluginConfiguration(options) {
         app.debug(`makePluginConfiguration(${JSON.stringify(options)})...`);
         var pluginConfiguration = {
             brokerUrl: (options.brokerUrl || BROKER_URL_DEFAULT),
             brokerCredentials: (options.brokerCredentials || undefined),
             publicationPaths: [],
-            subscriptionTopics: [],
-            rejectUnauthorised: options.rejectUnauthorised || BROKER_REJECT_UNAUTHORISED_DEFAULT
+            subscriptionTopics: []
         };
         if ((options.publication) && (options.publication.paths)) {
             options.publication.paths.forEach((pathOption) => {
@@ -181,7 +191,7 @@ module.exports = function (app) {
         if ((options.subscription) && (options.subscription.topics)) {
             options.subscription.topics.forEach((topicOption) => {
                 if (!topicOption.topic)
-                    throw ('missing sibscription \'topic\' property');
+                    throw ('missing subscription \'topic\' property');
                 var subscriptionTopic = {
                     topic: topicOption.topic,
                     path: `${options.subscription.root || SUBSCRIPTION_ROOT_DEFAULT}${(topicOption.path) ? topicOption.path : topicOption.topic}`.replace('/', '.')
@@ -191,12 +201,16 @@ module.exports = function (app) {
         }
         return (pluginConfiguration);
     }
+    /**
+     *
+     * @param pluginConfiguration fully qualified PluginConfiguration
+     * @returns MqttClient handle
+     */
     function operateBrokerInterface(pluginConfiguration) {
         app.debug(`operateBrokerInterface(${JSON.stringify(pluginConfiguration)})...`);
         var delta = new signalk_libdelta_1.Delta(app, plugin.id);
         var mqttClient = (0, mqtt_1.connect)(pluginConfiguration.brokerUrl, {
-            rejectUnauthorized: pluginConfiguration.rejectUnauthorised,
-            reconnectPeriod: BROKER_RECONNECT_PERIOD,
+            reconnectPeriod: (BROKER_RECONNECT_PERIOD * 1000),
             clientId: app.selfId,
             username: pluginConfiguration.brokerCredentials.split(':')[0].trim(),
             password: pluginConfiguration.brokerCredentials.split(':')[1].trim()
