@@ -248,7 +248,7 @@ module.exports = function(app: any) {
     })
       
     mqttClient.on('message', function(topic, message) {
-      var subscriptionTopic: SubscriptionTopic = pluginConfiguration.subscriptionTopics.reduce((a: any, t: SubscriptionTopic) => ((t.topic = topic)?t:a), undefined);
+      var subscriptionTopic: SubscriptionTopic = pluginConfiguration.subscriptionTopics.reduce((a: any, t: SubscriptionTopic) => ((t.topic == topic)?t:a), undefined);
       if (subscriptionTopic) {
         var value: string | number = message.toString()
         if (!isNaN(parseFloat(value))) {

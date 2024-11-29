@@ -233,7 +233,7 @@ module.exports = function (app) {
             unsubscribes.push(() => mqttClient.end());
         });
         mqttClient.on('message', function (topic, message) {
-            var subscriptionTopic = pluginConfiguration.subscriptionTopics.reduce((a, t) => ((t.topic = topic) ? t : a), undefined);
+            var subscriptionTopic = pluginConfiguration.subscriptionTopics.reduce((a, t) => ((t.topic == topic) ? t : a), undefined);
             if (subscriptionTopic) {
                 var value = message.toString();
                 if (!isNaN(parseFloat(value))) {
