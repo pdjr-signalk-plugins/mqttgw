@@ -1,10 +1,10 @@
-# pdjr-skplugin-mqttgw
+# mqttgw
 
 Exchange data between MQTT and Signal K.
 
 ## Description
 
-**pdjr-skplugin-mqttgw** exports data to and imports data from an
+**mqttgw** exports data to and imports data from an
 MQTT server using the mqtt: protocol.
 SSL/TLS connection is not supported.
 

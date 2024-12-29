@@ -25,7 +25,7 @@ const PUBLICATION_META_DEFAULT = false;
 const SUBSCRIPTION_ROOT_DEFAULT = 'mqtt.';
 const BROKER_RECONNECT_PERIOD = 10;
 const PLUGIN_ID = 'mqttgw';
-const PLUGIN_NAME = 'pdjr-skplugin-mqttgw';
+const PLUGIN_NAME = 'mqttgw';
 const PLUGIN_DESCRIPTION = 'Exchange data with an MQTT server';
 const PLUGIN_SCHEMA = {
     "type": "object",

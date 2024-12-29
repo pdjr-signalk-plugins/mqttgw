@@ -1,5 +1,5 @@
 {
-  "name": "pdjr-skplugin-mqttgw",
+  "name": "mqttgw",
   "version": "2.1.0",
   "description": "Exchange data between MQTT and Signal K",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw.git"
+    "url": "git+https://github.com/pdjr-signalk-plugins/mqttgw.git"
   },
   "keywords": [
     "signalk-node-server-plugin",
@@ -22,9 +22,9 @@
   "author": "Paul Reeve <preeve@pdjr.eu>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw/issues"
+    "url": "https://github.com/pdjr-signalk-plugins/mqttgw/issues"
   },
-  "homepage": "https://github.com/pdjr-signalk/pdjr-skplugin-mqttgw#readme",
+  "homepage": "https://github.com/pdjr-signalk-plugins/mqttgw#readme",
   "dependencies": {
     "mqtt": "^5.10.1",
     "signalk-libdelta": "github:pdjr-signalk/signalk-libdelta"

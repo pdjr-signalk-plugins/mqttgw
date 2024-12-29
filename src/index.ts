@@ -28,7 +28,7 @@ const SUBSCRIPTION_ROOT_DEFAULT: string = 'mqtt.';
 const BROKER_RECONNECT_PERIOD = 10;
 
 const PLUGIN_ID: string = 'mqttgw';
-const PLUGIN_NAME: string = 'pdjr-skplugin-mqttgw'
+const PLUGIN_NAME: string = 'mqttgw'
 const PLUGIN_DESCRIPTION = 'Exchange data with an MQTT server'
 const PLUGIN_SCHEMA: object = {
   "type": "object",
