@@ -183,7 +183,7 @@ module.exports = function(app: any) {
         var publicationPath: PublicationPath = {
           path: pathOption.path,
           topic: `${options.publication.root || PUBLICATION_ROOT_DEFAULT}${(pathOption.topic)?pathOption.topic:(pathOption.path.replaceAll('.','/'))}`,
-          interval: (pathOption.interval || options.interval || PUBLICATION_INTERVAL_DEFAULT) * 1000,
+          interval: (pathOption.interval || options.interval || PUBLICATION_INTERVAL_DEFAULT) * 1000 || 100,
           retain: pathOption.retain || options.retain || PUBLICATION_RETAIN_DEFAULT,
           meta: pathOption.meta || options.meta || PUBLICATION_META_DEFAULT
         };
