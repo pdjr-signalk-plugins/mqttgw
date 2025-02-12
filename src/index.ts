@@ -195,7 +195,7 @@ module.exports = function(app: any) {
         if (!topicOption.topic) throw('missing subscription \'topic\' property');
         var subscriptionTopic: SubscriptionTopic = {
           topic: topicOption.topic,
-          path: `${options.subscription.root || SUBSCRIPTION_ROOT_DEFAULT}${(topicOption.path)?topicOption.path:topicOption.topic}`.replace('/','.')
+          path: `${options.subscription.root || SUBSCRIPTION_ROOT_DEFAULT}${(topicOption.path)?topicOption.path:topicOption.topic}`.replaceAll('/','.')
         };
         pluginConfiguration.subscriptionTopics.push(subscriptionTopic);
       });
