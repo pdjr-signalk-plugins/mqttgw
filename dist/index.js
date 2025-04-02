@@ -176,7 +176,7 @@ module.exports = function (app) {
                 var publicationPath = {
                     path: pathOption.path,
                     topic: `${options.publication.root || PUBLICATION_ROOT_DEFAULT}${(pathOption.topic) ? pathOption.topic : (pathOption.path.replaceAll('.', '/'))}`,
-                    interval: (pathOption.interval || options.interval || PUBLICATION_INTERVAL_DEFAULT) * 1000,
+                    interval: (pathOption.interval || options.interval || PUBLICATION_INTERVAL_DEFAULT) * 1000 || 100,
                     retain: pathOption.retain || options.retain || PUBLICATION_RETAIN_DEFAULT,
                     meta: pathOption.meta || options.meta || PUBLICATION_META_DEFAULT
                 };
@@ -189,7 +189,7 @@ module.exports = function (app) {
                     throw ('missing subscription \'topic\' property');
                 var subscriptionTopic = {
                     topic: topicOption.topic,
-                    path: `${options.subscription.root || SUBSCRIPTION_ROOT_DEFAULT}${(topicOption.path) ? topicOption.path : topicOption.topic}`.replace('/', '.')
+                    path: `${options.subscription.root || SUBSCRIPTION_ROOT_DEFAULT}${(topicOption.path) ? topicOption.path : topicOption.topic}`.replaceAll('/', '.')
                 };
                 pluginConfiguration.subscriptionTopics.push(subscriptionTopic);
             });
